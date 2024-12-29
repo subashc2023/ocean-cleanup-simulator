@@ -25,7 +25,7 @@ const CleanupSimulator = () => {
   const [startYear, setStartYear] = useState(1991);
   const [endYear, setEndYear] = useState(2035);
   const [data, setData] = useState<DataPoint[]>([]);
-  const [zeroYear, setZeroYear] = useState(null);
+  const [zeroYear, setZeroYear] = useState<number | null>(null);
   
   // Constants
   const PRODUCTION_START_YEAR = 1950;
