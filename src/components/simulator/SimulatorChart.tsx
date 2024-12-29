@@ -79,7 +79,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   }}
                 />
                 
-                {chartConfig.lines.map((line: ChartLine) => (
+                {chartConfig.lines.map((line: ChartLine)=> (
                   <Line key={line.id} {...line} type="monotone" />
                 ))}
               </LineChart>

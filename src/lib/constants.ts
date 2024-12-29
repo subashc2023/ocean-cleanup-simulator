@@ -4,5 +4,3 @@ export const MAX_PROJECTION_YEAR = 2100;
 export const DEFAULT_COST_PER_KG_EUR = 5.22;
 export const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 export const DEFAULT_EXCHANGE_RATE = 0.93; 
-export const DEFAULT_OCEAN_COST = 5.3;  // EUR/kg for ocean cleanup
-export const DEFAULT_RIVER_COST = 0.53; // EUR/kg for river prevention (10x cheaper) 

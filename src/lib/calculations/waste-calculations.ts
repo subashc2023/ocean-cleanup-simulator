@@ -1,47 +1,58 @@
-import { PRODUCTION_START_YEAR } from '@/lib/constants';
-import type { RiverEffect } from './types';
+interface WasteParams {
+  baseProduction: number;  // Million metric tons in 1950
+  growthRate: number;      // Base growth rate
+  wasteRate: number;       // Initial waste rate
+  riverEfficiency: number; // % of waste that can be caught in rivers (cheaper)
+  preventionFactor: number;// How much prevention reduces future inflows
+}
+
+const DEFAULT_PARAMS: WasteParams = {
+  baseProduction: 2,
+  growthRate: 0.0743,
+  wasteRate: 0.02,
+  riverEfficiency: 0.3,    // 30% of waste can be caught in rivers
+  preventionFactor: 0.8    // Each ton of capacity reduces future inflows by 0.8 tons
+};
 
 export const calculateWastePerDay = (
   year: number, 
-  riverInterceptions: RiverEffect[] = [],
-  learningRate: number = 0.85
+  cumulativeCapacity: number = 0,
+  params: WasteParams = DEFAULT_PARAMS
 ): number => {
-  const baseProduction = 2; // Million metric tons in 1950
-  const growthRate = 0.0743; // Historical growth rate
-  const wasteRate = 0.02 + (year - 1950) * 0.0001;
+  const yearsSince1950 = year - 1950;
   
-  // Calculate base inflow
-  const totalProduction = baseProduction * Math.exp(growthRate * (year - 1950));
-  const baseInflow = (totalProduction * wasteRate * 1000000) / 365;
+  // Calculate base production without prevention effects
+  const baseTotal = params.baseProduction * Math.exp(params.growthRate * yearsSince1950);
   
-  // Subtract prevented waste from river interceptors
-  const preventedWaste = riverInterceptions
-    .filter(r => r.yearInstalled <= year)
-    .reduce((sum, r) => sum + r.flowReduction, 0);
-
-  return Math.max(0, baseInflow - preventedWaste);
+  // Calculate how much the cumulative cleanup capacity has reduced inflows
+  const preventionEffect = (cumulativeCapacity * params.preventionFactor) / 365;
+  
+  // Calculate actual production after prevention effects
+  const adjustedProduction = Math.max(0, baseTotal - preventionEffect);
+  
+  // Calculate waste rate with increasing efficiency over time
+  const wasteRate = params.wasteRate + (yearsSince1950 * 0.0001);
+  
+  return (adjustedProduction * wasteRate * 1000000) / 365;
 };
 
-export const calculateCleanupCost = (
-  year: number,
-  baseOceanCost: number,
-  baseRiverCost: number,
-  installedCapacity: number
-): { oceanCost: number; riverCost: number } => {
-  const doublings = Math.log2(installedCapacity / 1000); // Initial 1000 ton reference
-  const learningFactor = Math.pow(0.85, doublings);
-  
-  return {
-    oceanCost: baseOceanCost * learningFactor,
-    riverCost: baseRiverCost * learningFactor
-  };
-};
-
-export const calculateHistoricalAccumulation = (upToYear: number): number => {
+export const calculateHistoricalAccumulation = (
+  upToYear: number, 
+  startYear: number,
+  annualBudget: number,
+  costPerKg: number
+): number => {
   let accumulation = 0;
-  for (let year = PRODUCTION_START_YEAR; year < upToYear; year++) {
-    const currentWaste = calculateWastePerDay(year);
-    const nextYearWaste = calculateWastePerDay(year + 1);
+  let cumulativeCapacity = 0;
+  
+  for (let year = startYear; year < upToYear; year++) {
+    // Calculate capacity added this year
+    const costPerTon = costPerKg * 1000;
+    const yearlyCapacity = annualBudget / costPerTon;
+    cumulativeCapacity += yearlyCapacity;
+
+    const currentWaste = calculateWastePerDay(year, cumulativeCapacity);
+    const nextYearWaste = calculateWastePerDay(year + 1, cumulativeCapacity);
     const yearlyAmount = ((currentWaste + nextYearWaste) / 2) * 365;
     accumulation += yearlyAmount;
   }

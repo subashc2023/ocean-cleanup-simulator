@@ -7,20 +7,14 @@ import {
   formatBudget, 
   logSliderToPrice, 
   priceToLogSlider,
-  calculateWastePerDay,
-  calculateCleanupCost,
-  calculateHistoricalAccumulation,
-  type DataPoint,
-  type RiverEffect
+  type DataPoint 
 } from '@/lib/calculations';
 import { 
   PRODUCTION_START_YEAR, 
   CLEANUP_START_YEAR, 
   MAX_PROJECTION_YEAR,
   DEFAULT_COST_PER_KG_EUR,
-  DEFAULT_EXCHANGE_RATE,
-  DEFAULT_OCEAN_COST,
-  DEFAULT_RIVER_COST
+  DEFAULT_EXCHANGE_RATE
 } from '@/lib/constants';
 
 import { SimulatorHeader } from './simulator/SimulatorHeader';
@@ -36,79 +30,82 @@ const CleanupSimulator = () => {
   const [endYear, setEndYear] = useState(2035);
   const [data, setData] = useState<DataPoint[]>([]);
   const [zeroYear, setZeroYear] = useState<number | null>(null);
-  const [cleanupStrategy, setCleanupStrategy] = useState<'ocean' | 'river' | 'hybrid'>('hybrid');
-  const [installedCapacity, setInstalledCapacity] = useState(0);
-  const [riverInterceptions, setRiverInterceptions] = useState<RiverEffect[]>([]);
+  const [cumulativeCapacity, setCumulativeCapacity] = useState(0);
   
   const { exchangeRate, isLoadingRate } = useExchangeRate();
+
+  // Calculate daily waste production based on historical growth patterns
+  const calculateWastePerDay = (year: number): number => {
+    const baseProduction = 2; // Million metric tons in 1950
+    const growthRate = 0.0743; // Historical growth rate
+    const wasteRate = 0.02 + (year - 1950) * 0.0001; // Increasing waste rate
+    
+    const totalProduction = baseProduction * Math.exp(growthRate * (year - 1950));
+    return (totalProduction * wasteRate * 1000000) / 365;
+  };
+
+  // Calculate accumulated waste up to a given year
+  const calculateHistoricalAccumulation = (upToYear: number): number => {
+    let accumulation = 0;
+    for (let year = PRODUCTION_START_YEAR; year < upToYear; year++) {
+      const currentWaste = calculateWastePerDay(year);
+      const nextYearWaste = calculateWastePerDay(year + 1);
+      const yearlyAmount = ((currentWaste + nextYearWaste) / 2) * 365;
+      accumulation += yearlyAmount;
+    }
+    return accumulation;
+  };
 
   // Update data when parameters change
   useEffect(() => {
     const results: DataPoint[] = [];
     
-    let currentCapacity = 0;
-    let currentRiverInterceptions: RiverEffect[] = [];
-    
-    if (startYear >= endYear) return;
+    // Ensure valid year range
+    if (startYear >= endYear) {
+      return;
+    }
 
+    // Calculate initial accumulation up to start year
     const historicalAccumulation = calculateHistoricalAccumulation(startYear);
     let cumulativeTotal = historicalAccumulation;
     let cumulativeTotalNoCleanup = historicalAccumulation;
+    let capacityBuilt = 0;
     
+    const costPerTon = costPerKg * 1000;
+    const yearlyCapacity = annualBudget / costPerTon;
+    
+    // Calculate previous year's values for initial point
     const previousYearWaste = calculateWastePerDay(startYear - 1);
-    let previousNetChange = previousYearWaste;
+    const previousYearRemoval = (startYear - 1) >= CLEANUP_START_YEAR ? yearlyCapacity : 0;
+    const previousNetChange = previousYearWaste - previousYearRemoval;
     
+    // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
-      const { oceanCost, riverCost } = calculateCleanupCost(
-        year, 
-        DEFAULT_OCEAN_COST, 
-        DEFAULT_RIVER_COST, 
-        currentCapacity
-      );
-
-      // Fixed 80/20 split between prevention and cleanup
-      const riverBudget = year >= CLEANUP_START_YEAR ? annualBudget * 0.8 : 0;
-      const oceanBudget = year >= CLEANUP_START_YEAR ? annualBudget * 0.2 : 0;
-
-      // Calculate new river interceptions
-      if (riverBudget > 0) {
-        const newRiverCapacity = riverBudget / riverCost;
-        currentCapacity += newRiverCapacity;
-        
-        currentRiverInterceptions.push({
-          yearInstalled: year,
-          flowReduction: newRiverCapacity / 365,
-          installationCost: riverBudget
-        });
+      if (year >= CLEANUP_START_YEAR) {
+        capacityBuilt += yearlyCapacity;
       }
-
-      // Calculate flows and cleanup
-      const wastePerDay = calculateWastePerDay(year, currentRiverInterceptions);
-      const oceanRemovalPerDay = oceanBudget / (oceanCost * 1000 * 365);
       
-      // Net change can be negative when cleanup exceeds inflow
-      const netDailyChange = wastePerDay - oceanRemovalPerDay;
+      const wastePerDay = calculateWastePerDay(year, capacityBuilt);
+      const removalPerDay = year >= CLEANUP_START_YEAR ? yearlyCapacity / 365 : 0;
+      const netDailyChange = wastePerDay - removalPerDay;
       
-      // Calculate yearly changes using trapezoidal integration
+      // Calculate yearly accumulation using trapezoidal integration
       const yearlyAmount = ((netDailyChange + previousNetChange) / 2) * 365;
       const yearlyAmountNoCleanup = ((wastePerDay + previousYearWaste) / 2) * 365;
       
-      // Update cumulative totals, ensuring they don't go below zero
+      // Update cumulative totals
       if (year > startYear) {
-        cumulativeTotal = Math.max(0, cumulativeTotal + yearlyAmount);
+        cumulativeTotal += yearlyAmount;
         cumulativeTotalNoCleanup += yearlyAmountNoCleanup;
       }
       
       results.push({
         year,
         dailyInflow: Math.round(wastePerDay),
-        netInflow: Math.round(netDailyChange), // Can be negative!
-        cumulativeMillionTons: Math.round(cumulativeTotal / 1000000 * 10) / 10,
+        netInflow: Math.round(netDailyChange),
+        cumulativeMillionTons: Math.max(0, Math.round(cumulativeTotal / 1000000 * 10) / 10),
         cumulativeNoCleanupMillionTons: Math.round(cumulativeTotalNoCleanup / 1000000 * 10) / 10
       });
-
-      previousYearWaste = wastePerDay;
-      previousNetChange = netDailyChange;
     }
     
     setData(results);

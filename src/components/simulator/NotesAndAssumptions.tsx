@@ -36,7 +36,6 @@ export const NotesAndAssumptions = ({
       <li>Projections assume constant growth rates and cleanup costs</li>
       <li>This simulation does not account for the difference between the cost of removing plastic(Ocean plastic) and the cost of preventing it(River Plastic).</li>
       <li>Ocean plastic is 90%+ of the total plastic waste, and is 10x more expensive per kg to capture.</li>
-      <li>The biggest assumption made is that Rivers are the only source of plastic. If this is not the case, the simulation is too optimistic</li>
     </ul>
   </div>
 ); 
