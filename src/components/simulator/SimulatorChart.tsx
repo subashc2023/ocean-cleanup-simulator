@@ -7,21 +7,6 @@ import { chartConfig } from './chart-config';
 import type { ChartLine, SimulatorChartProps } from './types';
 import { TEAM_SEAS_START, TEAM_SEAS_END, TEAM_SEAS_TOTAL_TONS, TEAM_SEAS_DAILY_RATE } from '@/lib/constants';
 
-const TeamSeasTooltip = () => (
-  <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
-    <h3 className="font-medium text-white mb-2">Team Seas</h3>
-    <div className="space-y-1 text-sm text-gray-300">
-      <p>MrBeast and Mark Rober</p>
-      <p>Total Removed: {TEAM_SEAS_TOTAL_TONS.toLocaleString()} tons</p>
-      <p>Duration: {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
-      <p>Daily Rate: {TEAM_SEAS_DAILY_RATE.toFixed(3)} tons/day</p>
-      <p>Pounds: {Math.round(TEAM_SEAS_TOTAL_TONS * 2204.62).toLocaleString()} lbs</p>
-      <p>Kilograms: {Math.round(TEAM_SEAS_TOTAL_TONS * 1000).toLocaleString()} kg</p>
-      <p>Cost: ${(33.79).toFixed(2)}M</p>
-    </div>
-  </div>
-);
-
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
   const leftAxisMax = Math.ceil(maxDailyFlow * 1.1 / 1000) * 1000;
@@ -76,17 +61,17 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   tickMargin={8}
                 />
                 
-                {/* Team Seas Reference Line */}
+                {/* Team Seas Reference Area */}
                 <ReferenceLine
                   x={TEAM_SEAS_START}
                   stroke="#10B981"
                   strokeWidth={2}
                   strokeDasharray="3 3"
                   label={{
-                    position: 'top',
-                    value: 'Team Seas',
+                    value: 'Team Seas Start',
                     fill: '#10B981',
-                    fontSize: 12
+                    fontSize: 12,
+                    position: 'top'
                   }}
                 />
                 <ReferenceLine
@@ -94,9 +79,15 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   stroke="#10B981"
                   strokeWidth={2}
                   strokeDasharray="3 3"
+                  label={{
+                    value: 'Team Seas End',
+                    fill: '#10B981',
+                    fontSize: 12,
+                    position: 'top'
+                  }}
                 />
                 
-                {/* Horizontal reference line for Team Seas period */}
+                {/* Team Seas Horizontal Line */}
                 <ReferenceLine
                   y={TEAM_SEAS_DAILY_RATE}
                   stroke="#10B981"
@@ -105,11 +96,29 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                     { x: TEAM_SEAS_START },
                     { x: TEAM_SEAS_END }
                   ]}
-                  label={<TeamSeasTooltip />}
+                  label={{
+                    value: `${TEAM_SEAS_DAILY_RATE.toFixed(1)} tons/day`,
+                    fill: '#10B981',
+                    fontSize: 12,
+                    position: 'right'
+                  }}
                 />
 
+                {/* Custom Tooltip */}
                 <Tooltip 
                   formatter={(value: number, name: string) => {
+                    if (name === 'Team Seas') {
+                      return [
+                        <div key="tooltip" className="space-y-1">
+                          <p>MrBeast and Mark Rober</p>
+                          <p>Total: {TEAM_SEAS_TOTAL_TONS.toLocaleString()} tons</p>
+                          <p>Duration: {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
+                          <p>Daily: {TEAM_SEAS_DAILY_RATE.toFixed(3)} tons/day</p>
+                          <p>Cost: $33.79M</p>
+                        </div>,
+                        'Team Seas'
+                      ];
+                    }
                     const formatter = chartConfig.tooltipFormatters[name as keyof typeof chartConfig.tooltipFormatters];
                     return formatter ? formatter(value) : value.toLocaleString();
                   }}
@@ -130,7 +139,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   }}
                 />
                 
-                {chartConfig.lines.map((line: ChartLine)=> (
+                {chartConfig.lines.map((line: ChartLine) => (
                   <Line key={line.id} {...line} type="monotone" />
                 ))}
               </LineChart>
