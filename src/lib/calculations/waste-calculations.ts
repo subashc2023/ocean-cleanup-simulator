@@ -1,4 +1,4 @@
-interface RiverEffect {
+export interface RiverEffect {
   yearInstalled: number;
   flowReduction: number;  // tons per day prevented
   installationCost: number;

@@ -7,14 +7,19 @@ import {
   formatBudget, 
   logSliderToPrice, 
   priceToLogSlider,
-  type DataPoint 
+  type DataPoint,
+  type RiverEffect,
+  calculateWastePerDay,
+  calculateCleanupCost
 } from '@/lib/calculations';
 import { 
   PRODUCTION_START_YEAR, 
   CLEANUP_START_YEAR, 
   MAX_PROJECTION_YEAR,
   DEFAULT_COST_PER_KG_EUR,
-  DEFAULT_EXCHANGE_RATE
+  DEFAULT_EXCHANGE_RATE,
+  DEFAULT_OCEAN_COST,
+  DEFAULT_RIVER_COST
 } from '@/lib/constants';
 
 import { SimulatorHeader } from './simulator/SimulatorHeader';
