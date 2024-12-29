@@ -1,0 +1,31 @@
+import { Card, CardContent } from '@/components/ui/card';
+
+export const ConclusionsPanel = () => (
+  <Card className="col-span-4 bg-gray-800 shadow-md rounded-none border border-gray-700">
+    <CardContent className="p-6">
+      <h3 className="font-medium text-white mb-4">Key Conclusions:</h3>
+      <div className="space-y-4 text-gray-300">
+        <div>
+          <h4 className="text-white font-medium mb-2">Strategic Insights:</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>A Penny of Prevention is worth a Pound of Cure</li>
+            <li>Ocean Cleanup is 10x more expensive than River Interception by weight</li>
+            <li>Top 3 countries account for 55% of river plastic output</li>
+            <li>Regional cooperation could dramatically improve efficiency</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-white font-medium mb-2">Cost-Effective Prevention and Cures:</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>$250M/year could handle Philippines' river output</li>
+            <li>$500M/year could handle Philippines + India</li>
+            <li>$1B/year could handle all major Asian river systems</li>
+            <li>At current costs, it will take $35B a year to handle every single source of plastic to the oceans</li>
+            <li>At current costs, it will take $25B One Time to clean every single major garbage patch</li>
+            <li>At current costs, it will take $1.5-3 Trillion to clean every single piece of plastic in the ocean</li>
+          </ul>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+); 
