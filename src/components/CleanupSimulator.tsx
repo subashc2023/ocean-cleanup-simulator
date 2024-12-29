@@ -498,7 +498,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'outside',
-                    offset: 45,
+                    offset: -20,
                     style: { fill: '#9CA3AF' }
                   }}
                   tickMargin={0}
