@@ -498,8 +498,8 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
         </CardContent>
       </Card>
 
-      <div className="text-sm text-gray-600 space-y-2">
-        <h3 className="font-medium text-gray-900">Notes & Assumptions:</h3>
+      <div className="text-sm text-gray-300 space-y-2">
+        <h3 className="font-medium text-white">Notes & Assumptions:</h3>
         <ul className="list-disc pl-5 space-y-1">
           <li>Plastic production and waste tracking starts from {PRODUCTION_START_YEAR}</li>
           <li>Graph shows data from {startYear} to {endYear}</li>
