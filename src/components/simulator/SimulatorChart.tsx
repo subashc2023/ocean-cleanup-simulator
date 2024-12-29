@@ -1,4 +1,4 @@
-import { ResponsiveLine } from '@nivo/line';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { DataPoint } from '@/lib/calculations';
 
@@ -7,115 +7,128 @@ interface SimulatorChartProps {
 }
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
-  // Transform data for Nivo format
-  const chartData = [
-    {
-      id: "Original Inflow",
-      data: data.map(d => ({ x: d.year, y: d.dailyInflow }))
-    },
-    {
-      id: "Net Inflow with Cleanup",
-      data: data.map(d => ({ x: d.year, y: d.netInflow }))
-    },
-    {
-      id: "Original Total",
-      data: data.map(d => ({ x: d.year, y: d.cumulativeNoCleanupMillionTons }))
-    },
-    {
-      id: "New Total",
-      data: data.map(d => ({ x: d.year, y: d.cumulativeMillionTons }))
-    }
-  ];
+  // Calculate the domains based on data
+  const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
+  const maxTotal = Math.max(...data.map(d => d.cumulativeNoCleanupMillionTons));
+  
+  // Set up domains with a fixed ratio (approximately 365:1 for annual accumulation)
+  const leftAxisMax = Math.ceil(maxDailyFlow * 1.1 / 1000) * 1000; // Round to nearest thousand
+  const rightAxisMax = Math.ceil(leftAxisMax * 365 / 1000000); // Convert to million tons
 
   return (
     <Card className="bg-[#1a1f2d] shadow-md rounded-none border border-gray-700">
       <CardContent className="p-0">
         <div className="h-[600px]">
-          <ResponsiveLine
-            data={chartData}
-            margin={{ top: 50, right: 110, bottom: 50, left: 80 }}
-            xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
-            yScale={{ type: 'linear', min: 0, max: 'auto' }}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: 'Year',
-              legendOffset: 36,
-              legendPosition: 'middle'
-            }}
-            axisLeft={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: 'Daily Plastic Flow (Thousands of Metric Tons/Day)',
-              legendOffset: -60,
-              legendPosition: 'middle'
-            }}
-            colors={{ scheme: 'category10' }}
-            pointSize={0}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
-            pointLabelYOffset={-12}
-            useMesh={true}
-            legends={[
-              {
-                anchor: 'bottom-right',
-                direction: 'column',
-                justify: false,
-                translateX: 100,
-                translateY: 0,
-                itemsSpacing: 0,
-                itemDirection: 'left-to-right',
-                itemWidth: 80,
-                itemHeight: 20,
-                itemOpacity: 0.75,
-                symbolSize: 12,
-                symbolShape: 'circle',
-                symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                effects: [
-                  {
-                    on: 'hover',
-                    style: {
-                      itemBackground: 'rgba(0, 0, 0, .03)',
-                      itemOpacity: 1
-                    }
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data}
+              margin={{
+                top: 20,
+                right: 90,
+                left: 90,
+                bottom: 40
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis 
+                dataKey="year" 
+                label={{ 
+                  value: 'Year', 
+                  position: 'insideBottom',
+                  offset: -10,
+                  fill: '#9CA3AF'
+                }}
+              />
+              <YAxis 
+                yAxisId="left"
+                domain={[0, leftAxisMax]}
+                label={{ 
+                  value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
+                  angle: -90, 
+                  position: 'outside',
+                  offset: 20,
+                  style: { fill: '#9CA3AF' }
+                }}
+                tickMargin={8}
+                tickFormatter={(value) => (value / 1000).toFixed(0)}
+              />
+              <YAxis 
+                yAxisId="right"
+                orientation="right"
+                domain={[0, rightAxisMax]}
+                label={{ 
+                  value: 'Total Accumulated Plastic (Million Tons)', 
+                  angle: 90, 
+                  position: 'outside',
+                  offset: 20,
+                  style: { fill: '#9CA3AF' }
+                }}
+                tickMargin={8}
+              />
+              <Tooltip 
+                formatter={(value: number, name) => {
+                  switch(name) {
+                    case "Original Total":
+                    case "New Total":
+                      return `${value.toLocaleString()} million tons`;
+                    case "Original Inflow":
+                    case "Net Inflow with Cleanup":
+                      return `${value.toLocaleString()} tons/day`;
+                    default:
+                      return value.toLocaleString();
                   }
-                ]
-              }
-            ]}
-            theme={{
-              axis: {
-                legend: {
-                  text: {
-                    fill: '#9CA3AF',
-                    fontSize: 12
-                  }
-                },
-                ticks: {
-                  text: {
-                    fill: '#9CA3AF',
-                    fontSize: 11
-                  }
-                }
-              },
-              grid: {
-                line: {
-                  stroke: '#374151',
-                  strokeWidth: 1
-                }
-              },
-              legends: {
-                text: {
-                  fill: '#9CA3AF',
-                  fontSize: 11
-                }
-              }
-            }}
-          />
+                }}
+                contentStyle={{
+                  backgroundColor: '#1a1f2d',
+                  border: '1px solid #374151',
+                  color: '#9CA3AF'
+                }}
+              />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36}
+                wrapperStyle={{
+                  paddingTop: '10px',
+                  paddingBottom: '10px',
+                  marginBottom: '-5px'
+                }}
+              />
+              <Line 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="dailyInflow" 
+                name="Original Inflow"
+                stroke="#dc2626" 
+                strokeWidth={2}
+              />
+              <Line 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="netInflow" 
+                name="Net Inflow with Cleanup"
+                stroke="#ea580c" 
+                strokeWidth={2}
+                strokeDasharray="5 5"
+              />
+              <Line 
+                yAxisId="right"
+                type="monotone" 
+                dataKey="cumulativeNoCleanupMillionTons" 
+                name="Original Total"
+                stroke="#2563eb" 
+                strokeWidth={2}
+              />
+              <Line 
+                yAxisId="right"
+                type="monotone" 
+                dataKey="cumulativeMillionTons" 
+                name="New Total"
+                stroke="#16a34a" 
+                strokeWidth={2}
+                strokeDasharray="5 5"
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </CardContent>
     </Card>
