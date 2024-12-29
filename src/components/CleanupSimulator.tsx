@@ -485,7 +485,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
                     angle: -90, 
                     position: 'outside',
-                    offset: 20,
+                    offset: 30,
                     style: { fill: '#9CA3AF' }
                   }}
                   tickMargin={0}
@@ -498,7 +498,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'outside',
-                    offset: 20,
+                    offset: 45,
                     style: { fill: '#9CA3AF' }
                   }}
                   tickMargin={0}
