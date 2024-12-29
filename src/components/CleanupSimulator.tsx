@@ -4,6 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useExchangeRate } from '@/hooks/useExchangeRate';
+import { 
+  calculateZeroYear, 
+  formatBudget, 
+  logSliderToPrice, 
+  priceToLogSlider,
+  type DataPoint 
+} from '@/lib/calculations';
+import { 
+  PRODUCTION_START_YEAR, 
+  CLEANUP_START_YEAR, 
+  MAX_PROJECTION_YEAR,
+  DEFAULT_COST_PER_KG_EUR,
+  DEFAULT_EXCHANGE_RATE
+} from '@/lib/constants';
 
 /**
  * Waste Cleanup Simulator
@@ -20,20 +35,16 @@ import { Input } from '@/components/ui/input';
  * - Zero waste projection based on current rates
  */
 const CleanupSimulator = () => {
+  // Initialize with EUR cost converted to USD
   const [annualBudget, setAnnualBudget] = useState(10000000000);
-  const [costPerKg, setCostPerKg] = useState(5.22 / 0.93);
+  const [costPerKg, setCostPerKg] = useState(DEFAULT_COST_PER_KG_EUR / DEFAULT_EXCHANGE_RATE);
   const [startYear, setStartYear] = useState(1991);
   const [endYear, setEndYear] = useState(2035);
   const [data, setData] = useState<DataPoint[]>([]);
   const [zeroYear, setZeroYear] = useState<number | null>(null);
-  const [exchangeRate, setExchangeRate] = useState(0.93);
-  const [isLoadingRate, setIsLoadingRate] = useState(true);
   
-  // Constants
-  const PRODUCTION_START_YEAR = 1950;
-  const CLEANUP_START_YEAR = 2024;
-  const MAX_PROJECTION_YEAR = 2100;
-  
+  const { exchangeRate, isLoadingRate } = useExchangeRate();
+
   // Calculate daily waste production based on historical growth patterns
   const calculateWastePerDay = (year: number): number => {
     const baseProduction = 2; // Million metric tons in 1950
@@ -58,52 +69,9 @@ const CleanupSimulator = () => {
     return accumulation;
   };
 
-  // Find the year when total waste reaches zero by calculating the y-intercept
-  interface DataPoint {
-  year: number;
-  originalWastePerDay: number;
-  removalPerDay: number;
-  netDailyChange: number;
-  cumulativeMillionTons: number;
-  cumulativeNoCleanupMillionTons: number;
-}
-
-const calculateZeroYear = (latestData: DataPoint | undefined): number | null => {
-    if (!latestData || !latestData.cumulativeMillionTons) return null;
-    
-    const costPerTon = costPerKg * 1000;
-    const removalCapacity = (annualBudget / costPerTon) / 365;
-    
-    // If we're not removing anything, we'll never reach zero
-    if (removalCapacity <= 0) return null;
-    
-    // Get the current rate of change from the last two data points
-    const lastIndex = data.length - 1;
-    if (lastIndex < 1) return null;
-    
-    const y2 = data[lastIndex].cumulativeMillionTons;
-    const y1 = data[lastIndex - 1].cumulativeMillionTons;
-    const x2 = data[lastIndex].year;
-    const x1 = data[lastIndex - 1].year;
-    
-    // Calculate slope (million tons per year)
-    const slope = (y2 - y1) / (x2 - x1);
-    
-    // If we're not decreasing, we'll never reach zero
-    if (slope >= 0) return null;
-    
-    // Using point-slope form to find x-intercept:
-    // y - y1 = m(x - x1)
-    // 0 - y2 = m(x - x2)
-    // -y2 = m(x - x2)
-    // x = -y2/m + x2
-    const zeroYear = Math.ceil(-y2/slope + x2);
-    
-    return zeroYear <= MAX_PROJECTION_YEAR * 2 ? zeroYear : null;
-  };
-
+  // Update data when parameters change
   useEffect(() => {
-    const results = [];
+    const results: DataPoint[] = [];
     const historicalAccumulation = calculateHistoricalAccumulation(startYear);
     let cumulativeTotal = historicalAccumulation;
     let cumulativeTotalNoCleanup = historicalAccumulation;
@@ -129,109 +97,38 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
       
       results.push({
         year,
-        originalWastePerDay: Math.round(wastePerDay),
-        removalPerDay: Math.round(removalPerDay),
-        netDailyChange: Math.round(netDailyChange),
+        dailyInflow: Math.round(wastePerDay),
+        netInflow: Math.round(netDailyChange),
         cumulativeMillionTons: Math.max(0, Math.round(cumulativeTotal / 1000000 * 10) / 10),
         cumulativeNoCleanupMillionTons: Math.round(cumulativeTotalNoCleanup / 1000000 * 10) / 10
       });
     }
     
     setData(results);
-    setZeroYear(calculateZeroYear(results[results.length - 1]));
+    setZeroYear(calculateZeroYear(results, costPerKg, annualBudget, MAX_PROJECTION_YEAR));
   }, [annualBudget, costPerKg, startYear, endYear]);
 
-  interface CachedRate {
-    rate: number;
-    timestamp: number;
-  }
+  // Input handlers
+  const handleBudgetTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim().toUpperCase();
+    const match = value.match(/^(\d+\.?\d*)\s*(M|B|T)$/);
+    if (!match) return;
 
-  const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
-  const getCachedExchangeRate = (): CachedRate | null => {
-    const cached = localStorage.getItem('exchangeRate');
-    if (!cached) return null;
+    const [_, number, unit] = match;
+    const numValue = parseFloat(number);
     
-    try {
-      return JSON.parse(cached) as CachedRate;
-    } catch {
-      return null;
+    const multiplier = unit === 'T' ? 1e12 : unit === 'B' ? 1e9 : 1e6;
+    const newValue = numValue * multiplier;
+    
+    if (newValue >= 100000000 && newValue <= 1000000000000) {
+      setAnnualBudget(newValue);
     }
-  };
-
-  const setCachedExchangeRate = (rate: number) => {
-    const cacheData: CachedRate = {
-      rate,
-      timestamp: Date.now()
-    };
-    localStorage.setItem('exchangeRate', JSON.stringify(cacheData));
-  };
-
-  useEffect(() => {
-    const fetchExchangeRate = async () => {
-      // Check cache first
-      const cached = getCachedExchangeRate();
-      if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
-        setExchangeRate(cached.rate);
-        setIsLoadingRate(false);
-        return;
-      }
-
-      try {
-        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const data = await response.json();
-        const newRate = data.rates.EUR;
-        setExchangeRate(newRate);
-        setCachedExchangeRate(newRate);
-        setIsLoadingRate(false);
-      } catch (error) {
-        console.error('Failed to fetch exchange rate:', error);
-        // If we have a cached rate, use it even if expired
-        if (cached) {
-          setExchangeRate(cached.rate);
-        } else {
-          setExchangeRate(0.93); // Fallback default rate
-        }
-        setIsLoadingRate(false);
-      }
-    };
-
-    fetchExchangeRate();
-  }, []); // Empty dependency array means this runs once on mount
-
-  const logSliderToPrice = (value: number): number => {
-    // Convert slider value (0-100) to price ($0.1-$100)
-    // Using exponential function to create non-linear scale
-    const minPrice = 0.1;
-    const maxPrice = 100;
-    const minLog = Math.log(minPrice);
-    const maxLog = Math.log(maxPrice);
-    const scale = (maxLog - minLog) / 100;
-    
-    return Math.exp(minLog + scale * value);
-  };
-
-  const priceToLogSlider = (price: number): number => {
-    // Convert price back to slider value
-    const minPrice = 0.1;
-    const maxPrice = 100;
-    const minLog = Math.log(minPrice);
-    const maxLog = Math.log(maxPrice);
-    const scale = (maxLog - minLog) / 100;
-    
-    return (Math.log(price) - minLog) / scale;
   };
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     const price = logSliderToPrice(value);
     setCostPerKg(Number(price.toFixed(2)));
-  };
-
-  const formatBudget = (value: number): string => {
-    return value >= 1000000000 
-      ? `$${(value / 1000000000).toFixed(1)}B`
-      : `$${(value / 1000000).toFixed(1)}M`;
   };
 
   const handleCostChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -264,32 +161,10 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
 
   const initialAccumulation = data[0]?.cumulativeNoCleanupMillionTons || 0;
 
-  const handleBudgetInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    if (!isNaN(value) && value >= 100000000 && value <= 150000000000) {
-      setAnnualBudget(value);
-    }
-  };
-
   const handleCostInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     if (!isNaN(value) && value >= 0.1 && value <= 100) {
       setCostPerKg(Number(value.toFixed(2)));
-    }
-  };
-
-  const parseBudgetInput = (input: string): number | null => {
-    const match = input.trim().toUpperCase().match(/^(\d+\.?\d*)\s*(M|B|T)$/);
-    if (!match) return null;
-
-    const [_, number, unit] = match;
-    const value = parseFloat(number);
-    
-    switch(unit) {
-      case 'M': return value * 1000000;
-      case 'B': return value * 1000000000;
-      case 'T': return value * 1000000000000;
-      default: return null;
     }
   };
 
@@ -313,13 +188,6 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
     const maxBudget = Math.log(1000000000000); // 1T
     const scale = (maxBudget - minBudget) / 100;
     return Math.round(Math.exp(minBudget + scale * value));
-  };
-
-  const handleBudgetTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsed = parseBudgetInput(e.target.value);
-    if (parsed !== null && parsed >= 100000000 && parsed <= 1000000000000) {
-      setAnnualBudget(parsed);
-    }
   };
 
   const handleBudgetSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -534,7 +402,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 <Line 
                   yAxisId="left"
                   type="monotone" 
-                  dataKey="originalWastePerDay" 
+                  dataKey="dailyInflow" 
                   name="Original Inflow"
                   stroke="#dc2626" 
                   strokeWidth={2}
@@ -542,7 +410,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 <Line 
                   yAxisId="left"
                   type="monotone" 
-                  dataKey="netDailyChange" 
+                  dataKey="netInflow" 
                   name="Net Inflow with Cleanup"
                   stroke="#ea580c" 
                   strokeWidth={2}
