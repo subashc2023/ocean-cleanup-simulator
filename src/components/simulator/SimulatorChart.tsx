@@ -1,7 +1,31 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
+  ResponsiveContainer, ReferenceLine 
+} from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
 import type { ChartLine, SimulatorChartProps } from './types';
+import { 
+  TEAM_SEAS_START, 
+  TEAM_SEAS_END, 
+  TEAM_SEAS_TOTAL_TONS,
+  TEAM_SEAS_DAILY_RATE 
+} from '@/lib/constants';
+
+// Custom tooltip component for Team Seas line
+const TeamSeasTooltip = () => (
+  <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
+    <h3 className="font-medium text-white mb-2">Team Seas</h3>
+    <div className="space-y-1 text-sm text-gray-300">
+      <p>MrBeast and Mark Rober</p>
+      <p>$33.79 Million Raised</p>
+      <p>{(TEAM_SEAS_TOTAL_TONS * 2204.62).toLocaleString()} lbs of trash</p>
+      <p>{(TEAM_SEAS_TOTAL_TONS * 1000).toLocaleString()} KG</p>
+      <p>{TEAM_SEAS_TOTAL_TONS.toLocaleString()} Tons over {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
+      <p>{TEAM_SEAS_DAILY_RATE.toFixed(3)} tons per day</p>
+    </div>
+  </div>
+);
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
@@ -57,6 +81,39 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   tickMargin={8}
                 />
                 
+                {/* Team Seas Reference Line */}
+                <ReferenceLine
+                  x={TEAM_SEAS_START}
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  strokeDasharray="3 3"
+                  label={{
+                    position: 'top',
+                    value: 'Team Seas',
+                    fill: '#10B981',
+                    fontSize: 12
+                  }}
+                />
+                <ReferenceLine
+                  x={TEAM_SEAS_END}
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  strokeDasharray="3 3"
+                />
+                
+                {/* Horizontal line connecting the vertical lines */}
+                <ReferenceLine
+                  y={leftAxisMax * 0.9} // Position near top
+                  segment={[
+                    { x: TEAM_SEAS_START },
+                    { x: TEAM_SEAS_END }
+                  ]}
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  strokeDasharray="3 3"
+                  label={<TeamSeasTooltip />}
+                />
+
                 <Tooltip 
                   formatter={(value: number, name: string) => {
                     const formatter = chartConfig.tooltipFormatters[name as keyof typeof chartConfig.tooltipFormatters];
