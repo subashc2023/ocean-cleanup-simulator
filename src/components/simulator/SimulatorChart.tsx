@@ -1,11 +1,7 @@
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-  ResponsiveContainer, ReferenceLine 
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
 import type { ChartLine, SimulatorChartProps } from './types';
-import { TEAM_SEAS_START, TEAM_SEAS_END, TEAM_SEAS_TOTAL_TONS, TEAM_SEAS_DAILY_RATE } from '@/lib/constants';
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
@@ -61,64 +57,8 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   tickMargin={8}
                 />
                 
-                {/* Team Seas Reference Area */}
-                <ReferenceLine
-                  x={TEAM_SEAS_START}
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  strokeDasharray="3 3"
-                  label={{
-                    value: 'Team Seas Start',
-                    fill: '#10B981',
-                    fontSize: 12,
-                    position: 'top'
-                  }}
-                />
-                <ReferenceLine
-                  x={TEAM_SEAS_END}
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  strokeDasharray="3 3"
-                  label={{
-                    value: 'Team Seas End',
-                    fill: '#10B981',
-                    fontSize: 12,
-                    position: 'top'
-                  }}
-                />
-                
-                {/* Team Seas Horizontal Line */}
-                <ReferenceLine
-                  y={TEAM_SEAS_DAILY_RATE}
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  segment={[
-                    { x: TEAM_SEAS_START },
-                    { x: TEAM_SEAS_END }
-                  ]}
-                  label={{
-                    value: `${TEAM_SEAS_DAILY_RATE.toFixed(1)} tons/day`,
-                    fill: '#10B981',
-                    fontSize: 12,
-                    position: 'right'
-                  }}
-                />
-
-                {/* Custom Tooltip */}
                 <Tooltip 
                   formatter={(value: number, name: string) => {
-                    if (name === 'Team Seas') {
-                      return [
-                        <div key="tooltip" className="space-y-1">
-                          <p>MrBeast and Mark Rober</p>
-                          <p>Total: {TEAM_SEAS_TOTAL_TONS.toLocaleString()} tons</p>
-                          <p>Duration: {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
-                          <p>Daily: {TEAM_SEAS_DAILY_RATE.toFixed(3)} tons/day</p>
-                          <p>Cost: $33.79M</p>
-                        </div>,
-                        'Team Seas'
-                      ];
-                    }
                     const formatter = chartConfig.tooltipFormatters[name as keyof typeof chartConfig.tooltipFormatters];
                     return formatter ? formatter(value) : value.toLocaleString();
                   }}
@@ -139,7 +79,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   }}
                 />
                 
-                {chartConfig.lines.map((line: ChartLine) => (
+                {chartConfig.lines.map((line: ChartLine)=> (
                   <Line key={line.id} {...line} type="monotone" />
                 ))}
               </LineChart>
