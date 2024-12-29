@@ -1,3 +1,5 @@
+import { PRODUCTION_START_YEAR } from '@/lib/constants';
+
 export interface RiverEffect {
   yearInstalled: number;
   flowReduction: number;  // tons per day prevented
@@ -6,7 +8,7 @@ export interface RiverEffect {
 
 export const calculateWastePerDay = (
   year: number, 
-  riverInterceptions: RiverEffect[],
+  riverInterceptions: RiverEffect[] = [],
   learningRate: number = 0.85  // 15% cost reduction for each doubling of capacity
 ): number => {
   const baseProduction = 2; // Million metric tons in 1950
@@ -40,9 +42,9 @@ export const calculateCleanupCost = (
   };
 };
 
-export const calculateHistoricalAccumulation = (upToYear: number, startYear: number): number => {
+export const calculateHistoricalAccumulation = (upToYear: number): number => {
   let accumulation = 0;
-  for (let year = startYear; year < upToYear; year++) {
+  for (let year = PRODUCTION_START_YEAR; year < upToYear; year++) {
     const currentWaste = calculateWastePerDay(year);
     const nextYearWaste = calculateWastePerDay(year + 1);
     const yearlyAmount = ((currentWaste + nextYearWaste) / 2) * 365;

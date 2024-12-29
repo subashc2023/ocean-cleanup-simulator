@@ -7,10 +7,11 @@ import {
   formatBudget, 
   logSliderToPrice, 
   priceToLogSlider,
-  type DataPoint,
-  type RiverEffect,
   calculateWastePerDay,
-  calculateCleanupCost
+  calculateCleanupCost,
+  calculateHistoricalAccumulation,
+  type DataPoint,
+  type RiverEffect
 } from '@/lib/calculations';
 import { 
   PRODUCTION_START_YEAR, 
