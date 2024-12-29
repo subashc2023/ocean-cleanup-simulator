@@ -2,9 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: rgb(13, 17, 23);
+html, body {
+  background-color: #0d1117 !important;
   color: white;
+  min-height: 100vh;
+}
+
+.recharts-wrapper {
+  background-color: #1a1f2d !important;
+}
+
+.recharts-surface {
+  background-color: #1a1f2d !important;
 }
 
 input[type="number"],
