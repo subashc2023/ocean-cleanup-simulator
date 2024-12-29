@@ -6,7 +6,7 @@ interface NotesPanelProps {
 }
 
 export const NotesPanel = ({ startYear, endYear }: NotesPanelProps) => (
-  <Card className="col-span-4 bg-gray-800 shadow-md rounded-none border border-gray-700">
+  <Card className="col-span-4 bg-gray-800 shadow-md rounded-xl border border-gray-700">
     <CardContent className="p-6">
       <h3 className="font-medium text-white mb-4">Notes & Assumptions:</h3>
       <ul className="list-disc pl-5 space-y-2 text-gray-300">

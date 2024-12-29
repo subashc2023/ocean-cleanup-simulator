@@ -39,7 +39,7 @@ export const SimulatorControls = ({
   priceToLogSlider,
   onYearRangeChange
 }: SimulatorControlsProps) => (
-  <Card className="bg-gray-800 shadow-md rounded-none border border-gray-700">
+  <Card className="bg-gray-800 shadow-md rounded-xl border border-gray-700">
     <CardContent className="p-6">
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -55,14 +55,14 @@ export const SimulatorControls = ({
                 step="1"
                 value={logBudgetToSlider(annualBudget)}
                 onChange={onBudgetSliderChange}
-                className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full bg-gray-800 text-white border-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               />
               <input
                 type="text"
                 value={formatBudget(annualBudget)}
                 onChange={onBudgetTextChange}
                 placeholder="10B"
-                className="w-24 bg-gray-800 text-white border-gray-700 rounded-md px-2 py-1 text-sm"
+                className="w-24 bg-gray-800 text-white border-gray-700 rounded-lg px-2 py-1 text-sm"
               />
             </div>
           </div>
@@ -90,7 +90,7 @@ export const SimulatorControls = ({
                     target: { ...e.target, value: newPrice.toString() }
                   });
                 }}
-                className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full bg-gray-800 text-white border-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               />
               <input
                 type="number"
@@ -107,7 +107,7 @@ export const SimulatorControls = ({
                     });
                   }
                 }}
-                className="w-24 bg-gray-800 text-white border-gray-700 rounded-md px-2 py-1 text-sm"
+                className="w-24 bg-gray-800 text-white border-gray-700 rounded-lg px-2 py-1 text-sm"
               />
             </div>
           </div>

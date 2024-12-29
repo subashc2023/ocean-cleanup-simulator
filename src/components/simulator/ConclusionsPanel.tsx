@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 
 export const ConclusionsPanel = () => (
-  <Card className="col-span-4 bg-gray-800 shadow-md rounded-none border border-gray-700">
+  <Card className="col-span-4 bg-gray-800 shadow-md rounded-xl border border-gray-700">
     <CardContent className="p-6">
       <h3 className="font-medium text-white mb-4">Key Conclusions:</h3>
       <div className="space-y-4 text-gray-300">
@@ -20,8 +20,8 @@ export const ConclusionsPanel = () => (
             <li>$250M/year could handle Philippines' river output</li>
             <li>$500M/year could handle Philippines + India</li>
             <li>$1B/year could handle all major Asian river systems</li>
-            <li>At current costs, it will take $35B a year to handle every single source of plastic to the oceans</li>
-            <li>At current costs, it will take $25B One Time to clean every single major garbage patch</li>
+            <li>At current costs, it will take $70B a year to handle almost every single source of plastic to the oceans</li>
+            <li>At current costs, it will take $50B One Time to clean every single major garbage patch</li>
             <li>At current costs, it will take $1.5-3 Trillion to clean every single piece of plastic in the ocean</li>
           </ul>
         </div>

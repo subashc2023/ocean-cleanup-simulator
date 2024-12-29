@@ -36,9 +36,9 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
         Total Accumulated Plastic (Million Tons)
       </div>
 
-      <Card className="bg-[#1a1f2d] shadow-md rounded-none border border-gray-700">
+      <Card className="bg-[#1a1f2d] shadow-md rounded-xl border border-gray-700">
         <CardContent className="p-0">
-          <div className="h-[600px]">
+          <div className="h-[600px] rounded-xl overflow-hidden">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={data}
