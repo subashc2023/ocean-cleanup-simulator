@@ -58,6 +58,13 @@ const CleanupSimulator = () => {
   // Update data when parameters change
   useEffect(() => {
     const results: DataPoint[] = [];
+    
+    // Ensure valid year range
+    if (startYear >= endYear) {
+      return;
+    }
+
+    // Calculate initial accumulation up to start year
     const historicalAccumulation = calculateHistoricalAccumulation(startYear);
     let cumulativeTotal = historicalAccumulation;
     let cumulativeTotalNoCleanup = historicalAccumulation;
@@ -65,19 +72,24 @@ const CleanupSimulator = () => {
     const costPerTon = costPerKg * 1000;
     const removalCapacity = (annualBudget / costPerTon) / 365;
     
+    // Calculate previous year's values for initial point
+    const previousYearWaste = calculateWastePerDay(startYear - 1);
+    const previousYearRemoval = (startYear - 1) >= CLEANUP_START_YEAR ? removalCapacity : 0;
+    const previousNetChange = previousYearWaste - previousYearRemoval;
+    
+    // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
       const wastePerDay = calculateWastePerDay(year);
       const removalPerDay = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
       const netDailyChange = wastePerDay - removalPerDay;
       
+      // Calculate yearly accumulation using trapezoidal integration
+      const yearlyAmount = ((netDailyChange + previousNetChange) / 2) * 365;
+      const yearlyAmountNoCleanup = ((wastePerDay + previousYearWaste) / 2) * 365;
+      
+      // Update cumulative totals
       if (year > startYear) {
-        const previousNet = calculateWastePerDay(year - 1) - 
-          (year - 1 >= CLEANUP_START_YEAR ? removalCapacity : 0);
-        const yearlyAmount = ((netDailyChange + previousNet) / 2) * 365;
         cumulativeTotal += yearlyAmount;
-        
-        const previousWaste = calculateWastePerDay(year - 1);
-        const yearlyAmountNoCleanup = ((wastePerDay + previousWaste) / 2) * 365;
         cumulativeTotalNoCleanup += yearlyAmountNoCleanup;
       }
       
@@ -119,10 +131,14 @@ const CleanupSimulator = () => {
 
   const handleYearChange = (type: 'start' | 'end', e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
-      if (type === 'start' && value >= PRODUCTION_START_YEAR && value < endYear) {
+    if (isNaN(value)) return;
+
+    if (type === 'start') {
+      if (value >= PRODUCTION_START_YEAR && value < endYear - 1) {
         setStartYear(value);
-      } else if (type === 'end' && value > startYear && value <= MAX_PROJECTION_YEAR) {
+      }
+    } else if (type === 'end') {
+      if (value > startYear + 1 && value <= MAX_PROJECTION_YEAR) {
         setEndYear(value);
       }
     }
