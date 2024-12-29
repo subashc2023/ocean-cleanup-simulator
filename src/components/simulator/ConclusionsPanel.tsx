@@ -11,12 +11,13 @@ export const ConclusionsPanel = () => (
             <li>A Penny of Prevention is worth a Pound of Cure</li>
             <li>Ocean Cleanup is 10x more expensive than River Interception by weight</li>
             <li>Top 3 countries account for 55% of river plastic output</li>
-            <li>Regional cooperation could dramatically improve efficiency</li>
+            <li>Regional cooperation could dramatically improve efficiency, but is unlikely, and so the simulation assumes uniform global distribution of effort</li>
           </ul>
         </div>
         <div>
           <h4 className="text-white font-medium mb-2">Cost-Effective Prevention and Cures:</h4>
           <ul className="list-disc pl-5 space-y-1">
+            <li>Concentrated efforts are insanely effective</li>
             <li>$250M/year could handle Philippines' river output</li>
             <li>$500M/year could handle Philippines + India</li>
             <li>$1B/year could handle all major Asian river systems</li>
