@@ -128,6 +128,27 @@ const CleanupSimulator = () => {
     }
   };
 
+  const logBudgetToSlider = (value: number): number => {
+    // Convert budget value to slider value (0-100)
+    const minBudget = Math.log(100000000); // 100M
+    const maxBudget = Math.log(1000000000000); // 1T
+    const scale = (maxBudget - minBudget) / 100;
+    return (Math.log(value) - minBudget) / scale;
+  };
+
+  const sliderToBudget = (value: number): number => {
+    // Convert slider value (0-100) to budget
+    const minBudget = Math.log(100000000); // 100M
+    const maxBudget = Math.log(1000000000000); // 1T
+    const scale = (maxBudget - minBudget) / 100;
+    return Math.round(Math.exp(minBudget + scale * value));
+  };
+
+  const handleBudgetSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setAnnualBudget(sliderToBudget(value));
+  };
+
   const currentMetrics = data[data.length - 1] || {};
   const reductionPercent = currentMetrics.cumulativeMillionTons && currentMetrics.cumulativeNoCleanupMillionTons
     ? ((currentMetrics.cumulativeNoCleanupMillionTons - currentMetrics.cumulativeMillionTons) / 
@@ -151,7 +172,7 @@ const CleanupSimulator = () => {
         exchangeRate={exchangeRate}
         isLoadingRate={isLoadingRate}
         onBudgetChange={handleBudgetTextChange}
-        onBudgetSliderChange={(e) => setAnnualBudget(Number(e.target.value))}
+        onBudgetSliderChange={handleBudgetSliderChange}
         onBudgetTextChange={handleBudgetTextChange}
         onCostChange={handleCostChange}
         onYearChange={handleYearChange}
