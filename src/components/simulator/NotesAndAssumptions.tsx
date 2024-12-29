@@ -26,15 +26,14 @@ export const NotesAndAssumptions = ({
     <Card className="col-span-4 bg-gray-800 shadow-md rounded-none border border-gray-700">
       <CardContent className="p-6">
         <h3 className="font-medium text-white mb-4">Notes & Assumptions:</h3>
-        <ul className="list-disc pl-5 space-y-1 text-gray-300">
+        <ul className="list-disc pl-5 space-y-2 text-gray-300">
           <li>Graph shows data from 1950 to 2100</li>
-          <li>Large scale cleanup efforts begin in {CLEANUP_START_YEAR}</li>
-          <li>The default rate of ~5,300 Euros/Ton is As per The Ocean Cleanup 2024
-          </li>
+          <li>Large scale cleanup efforts begin RIGHT NOW</li>
+          <li>The default rate of ~5,300 Euros/Ton is As per The Ocean Cleanup 2024</li>
           <li>Pre-2025 accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
-          <li>This simulation does not account for the difference between the cost of removing plastic(Ocean plastic) and the cost of preventing it(River Plastic).</li>
-          <li>Ocean plastic is 90%+ of the total plastic waste, and is 10x more expensive per kg to capture.</li>
+          <li>Economic benefits of cleanup or profits from selling recycled materials are not factored into costs</li>
+          <li>Local infrastructure development costs not included</li>
         </ul>
       </CardContent>
     </Card>
@@ -68,20 +67,33 @@ export const NotesAndAssumptions = ({
         </div>
       </CardContent>
     </Card>
-
     <Card className="col-span-4 bg-gray-800 shadow-md rounded-none border border-gray-700">
       <CardContent className="p-6">
         <h3 className="font-medium text-white mb-4">Key Conclusions:</h3>
-        <ul className="list-disc pl-5 space-y-1 text-gray-300">
-          <li>The Philippines contributes over a third of ocean plastic waste</li>
-          <li>Top 3 countries account for ~55% of global plastic waste</li>
-          <li>Rest of World collectively is the second-largest contributor</li>
-          <li>Southeast Asian nations dominate the top contributors</li>
-          <li>Targeted river cleanup in top nations could have outsized impact</li>
-          <li>Prevention in top 5 countries could reduce input by ~67%</li>
-          <li>Cost-effective approach: focus on river prevention in key regions</li>
-          <li>Regional cooperation in Southeast Asia is crucial</li>
-        </ul>
+        <div className="space-y-4 text-gray-300">
+          <div>
+            <h4 className="text-white font-medium mb-2">Strategic Insights:</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>A Penny of Prevention is worth a Pound of Cure</li>
+              <li>Ocean Cleanup is 10x more expensive than River Interception by weight</li>
+              <li>Top 3 countries account for 55% of river plastic output</li>
+              <li>Regional cooperation could dramatically improve efficiency</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-white font-medium mb-2">Cost-Effective Prevention and Cures:</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>$250M/year could handle Philippines' river output</li>
+              <li>$500M/year could handle Philippines + India</li>
+              <li>$1B/year could handle all major Asian river systems</li>
+              
+              <li>At current costs, it will take $35B a year to handle every single source of plastic to the oceans</li>
+
+              <li>At current costs, it will take $25B One Time to clean every single major garbage patch</li>
+              <li>At current costs, it will take $1.5-3 Trillion to clean every single piece of plastic in the ocean</li>
+            </ul>
+          </div>
+        </div>
       </CardContent>
     </Card>
   </div>
