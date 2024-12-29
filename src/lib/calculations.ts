@@ -49,7 +49,8 @@ export const logSliderToPrice = (value: number): number => {
   const minLog = Math.log(minPrice);
   const maxLog = Math.log(maxPrice);
   const scale = (maxLog - minLog) / 100;
-  return Math.exp(minLog + scale * value);
+  const result = Math.exp(minLog + scale * value);
+  return Number(result.toFixed(2));
 };
 
 export const priceToLogSlider = (price: number): number => {
@@ -58,5 +59,6 @@ export const priceToLogSlider = (price: number): number => {
   const minLog = Math.log(minPrice);
   const maxLog = Math.log(maxPrice);
   const scale = (maxLog - minLog) / 100;
-  return (Math.log(price) - minLog) / scale;
+  const value = (Math.log(price) - minLog) / scale;
+  return Math.round(value);
 }; 

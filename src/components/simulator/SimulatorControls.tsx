@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { PRODUCTION_START_YEAR, MAX_PROJECTION_YEAR } from '@/lib/constants';
+import { logSliderToPrice } from '@/lib/calculations';
 
 interface SimulatorControlsProps {
   annualBudget: number;
@@ -78,7 +79,14 @@ export const SimulatorControls = ({
                 max="100"
                 step="1"
                 value={priceToLogSlider(costPerKg)}
-                onChange={onCostChange}
+                onChange={(e) => {
+                  const sliderValue = Number(e.target.value);
+                  const newPrice = logSliderToPrice(sliderValue);
+                  onCostChange({
+                    ...e,
+                    target: { ...e.target, value: newPrice.toString() }
+                  });
+                }}
                 className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
               />
               <input
