@@ -46,29 +46,18 @@ const CleanupSimulator = () => {
   useEffect(() => {
     const results: DataPoint[] = [];
     
-    // Track installed capacity for learning curve
     let currentCapacity = 0;
     let currentRiverInterceptions: RiverEffect[] = [];
     
-    // Ensure valid year range
-    if (startYear >= endYear) {
-      return;
-    }
+    if (startYear >= endYear) return;
 
-    // Calculate initial accumulation up to start year
     const historicalAccumulation = calculateHistoricalAccumulation(startYear);
     let cumulativeTotal = historicalAccumulation;
     let cumulativeTotalNoCleanup = historicalAccumulation;
     
-    const costPerTon = costPerKg * 1000;
-    const removalCapacity = (annualBudget / costPerTon) / 365;
-    
-    // Calculate previous year's values for initial point
     const previousYearWaste = calculateWastePerDay(startYear - 1);
-    const previousYearRemoval = (startYear - 1) >= CLEANUP_START_YEAR ? removalCapacity : 0;
-    const previousNetChange = previousYearWaste - previousYearRemoval;
+    let previousNetChange = previousYearWaste;
     
-    // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
       const { oceanCost, riverCost } = calculateCleanupCost(
         year, 
@@ -77,15 +66,12 @@ const CleanupSimulator = () => {
         currentCapacity
       );
 
-      // Allocate budget between ocean and river cleanup
-      const riverBudget = cleanupStrategy === 'ocean' ? 0 : 
-        cleanupStrategy === 'river' ? annualBudget : 
-        annualBudget * 0.7; // 70% to rivers in hybrid strategy
-      
-      const oceanBudget = annualBudget - riverBudget;
+      // Fixed 80/20 split between prevention and cleanup
+      const riverBudget = year >= CLEANUP_START_YEAR ? annualBudget * 0.8 : 0;
+      const oceanBudget = year >= CLEANUP_START_YEAR ? annualBudget * 0.2 : 0;
 
       // Calculate new river interceptions
-      if (riverBudget > 0 && year >= CLEANUP_START_YEAR) {
+      if (riverBudget > 0) {
         const newRiverCapacity = riverBudget / riverCost;
         currentCapacity += newRiverCapacity;
         
@@ -96,33 +82,38 @@ const CleanupSimulator = () => {
         });
       }
 
+      // Calculate flows and cleanup
       const wastePerDay = calculateWastePerDay(year, currentRiverInterceptions);
-      const oceanRemovalPerDay = oceanBudget / (oceanCost * 365);
+      const oceanRemovalPerDay = oceanBudget / (oceanCost * 1000 * 365);
       
+      // Net change can be negative when cleanup exceeds inflow
       const netDailyChange = wastePerDay - oceanRemovalPerDay;
       
-      // Calculate yearly accumulation using trapezoidal integration
+      // Calculate yearly changes using trapezoidal integration
       const yearlyAmount = ((netDailyChange + previousNetChange) / 2) * 365;
       const yearlyAmountNoCleanup = ((wastePerDay + previousYearWaste) / 2) * 365;
       
-      // Update cumulative totals
+      // Update cumulative totals, ensuring they don't go below zero
       if (year > startYear) {
-        cumulativeTotal += yearlyAmount;
+        cumulativeTotal = Math.max(0, cumulativeTotal + yearlyAmount);
         cumulativeTotalNoCleanup += yearlyAmountNoCleanup;
       }
       
       results.push({
         year,
         dailyInflow: Math.round(wastePerDay),
-        netInflow: Math.round(netDailyChange),
-        cumulativeMillionTons: Math.max(0, Math.round(cumulativeTotal / 1000000 * 10) / 10),
+        netInflow: Math.round(netDailyChange), // Can be negative!
+        cumulativeMillionTons: Math.round(cumulativeTotal / 1000000 * 10) / 10,
         cumulativeNoCleanupMillionTons: Math.round(cumulativeTotalNoCleanup / 1000000 * 10) / 10
       });
+
+      previousYearWaste = wastePerDay;
+      previousNetChange = netDailyChange;
     }
     
     setData(results);
     setZeroYear(calculateZeroYear(results, costPerKg, annualBudget, MAX_PROJECTION_YEAR));
-  }, [annualBudget, costPerKg, startYear, endYear, cleanupStrategy]);
+  }, [annualBudget, costPerKg, startYear, endYear]);
 
   // Input handlers
   const handleBudgetTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
