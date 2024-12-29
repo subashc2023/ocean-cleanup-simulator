@@ -6,8 +6,6 @@ interface MetricsPanelProps {
   endYear: number;
   reductionPercent: string | number;
   zeroYear: number | null;
-  preventedWaste: number;
-  riverCapture: number;
 }
 
 export const MetricsPanel = ({
@@ -17,9 +15,7 @@ export const MetricsPanel = ({
   costPerKg,
   endYear,
   reductionPercent,
-  zeroYear,
-  preventedWaste,
-  riverCapture
+  zeroYear
 }: MetricsPanelProps) => (
   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
     <div className="p-4 bg-gray-900 rounded-none border border-gray-700">
@@ -40,18 +36,6 @@ export const MetricsPanel = ({
       <div className="font-medium text-gray-200">Zero Total Waste Year</div>
       <div className="mt-1 text-gray-300">
         {zeroYear ? zeroYear : 'Not reached by 2200'}
-      </div>
-    </div>
-    <div className="p-4 bg-gray-900 rounded-none border border-gray-700">
-      <div className="font-medium text-gray-200">Waste Prevention</div>
-      <div className="mt-1 text-gray-300">
-        {Math.round(preventedWaste).toLocaleString()} tons/day
-      </div>
-    </div>
-    <div className="p-4 bg-gray-900 rounded-none border border-gray-700">
-      <div className="font-medium text-gray-200">River Capture</div>
-      <div className="mt-1 text-gray-300">
-        {Math.round(riverCapture).toLocaleString()} tons/day
       </div>
     </div>
   </div>

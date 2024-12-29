@@ -30,7 +30,6 @@ const CleanupSimulator = () => {
   const [endYear, setEndYear] = useState(2035);
   const [data, setData] = useState<DataPoint[]>([]);
   const [zeroYear, setZeroYear] = useState<number | null>(null);
-  const [cumulativeCapacity, setCumulativeCapacity] = useState(0);
   
   const { exchangeRate, isLoadingRate } = useExchangeRate();
 
@@ -69,24 +68,19 @@ const CleanupSimulator = () => {
     const historicalAccumulation = calculateHistoricalAccumulation(startYear);
     let cumulativeTotal = historicalAccumulation;
     let cumulativeTotalNoCleanup = historicalAccumulation;
-    let capacityBuilt = 0;
     
     const costPerTon = costPerKg * 1000;
-    const yearlyCapacity = annualBudget / costPerTon;
+    const removalCapacity = (annualBudget / costPerTon) / 365;
     
     // Calculate previous year's values for initial point
     const previousYearWaste = calculateWastePerDay(startYear - 1);
-    const previousYearRemoval = (startYear - 1) >= CLEANUP_START_YEAR ? yearlyCapacity : 0;
+    const previousYearRemoval = (startYear - 1) >= CLEANUP_START_YEAR ? removalCapacity : 0;
     const previousNetChange = previousYearWaste - previousYearRemoval;
     
     // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
-      if (year >= CLEANUP_START_YEAR) {
-        capacityBuilt += yearlyCapacity;
-      }
-      
-      const wastePerDay = calculateWastePerDay(year, capacityBuilt);
-      const removalPerDay = year >= CLEANUP_START_YEAR ? yearlyCapacity / 365 : 0;
+      const wastePerDay = calculateWastePerDay(year);
+      const removalPerDay = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
       const netDailyChange = wastePerDay - removalPerDay;
       
       // Calculate yearly accumulation using trapezoidal integration
