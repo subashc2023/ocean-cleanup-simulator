@@ -1,10 +1,5 @@
 import { PRODUCTION_START_YEAR } from '@/lib/constants';
-
-export interface RiverEffect {
-  yearInstalled: number;
-  flowReduction: number;
-  installationCost: number;
-}
+import type { RiverEffect } from './types';
 
 export const calculateWastePerDay = (
   year: number, 

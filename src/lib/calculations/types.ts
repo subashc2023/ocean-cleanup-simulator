@@ -4,4 +4,10 @@ export interface DataPoint {
   netInflow: number;
   cumulativeMillionTons: number;
   cumulativeNoCleanupMillionTons: number;
+}
+
+export interface RiverEffect {
+  yearInstalled: number;
+  flowReduction: number;
+  installationCost: number;
 } 
