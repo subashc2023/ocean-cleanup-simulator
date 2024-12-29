@@ -1,64 +1,24 @@
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-  ResponsiveContainer 
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
 import type { ChartLine, SimulatorChartProps } from './types';
-import { 
-  TEAM_SEAS_START, 
-  TEAM_SEAS_END, 
-  TEAM_SEAS_TOTAL_TONS,
-  TEAM_SEAS_DAILY_RATE 
-} from '@/lib/constants';
+import { format } from 'date-fns';
 
-// Custom tooltip that shows both regular data and Team Seas info
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload) return null;
-
-  return (
-    <div className="flex gap-4">
-      {/* Regular data tooltip */}
-      <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
-        <h3 className="font-medium text-white mb-2">{label}</h3>
-        <div className="space-y-1 text-sm text-gray-300">
-          {payload.map((entry: any) => (
-            <p key={entry.name}>
-              {entry.name}: {
-                chartConfig.tooltipFormatters[entry.name]?.(entry.value) 
-                ?? entry.value.toLocaleString()
-              }
-            </p>
-          ))}
-        </div>
-      </div>
-
-      {/* Team Seas stats */}
-      <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
-        <h3 className="font-medium text-white mb-2">Team Seas</h3>
-        <div className="space-y-1 text-sm text-gray-300">
-          <p>MrBeast and Mark Rober</p>
-          <p>$33.79 Million</p>
-          <p>{(TEAM_SEAS_TOTAL_TONS * 2204.62).toLocaleString()} lbs of trash</p>
-          <p>{(TEAM_SEAS_TOTAL_TONS * 1000).toLocaleString()} KG</p>
-          <p>{TEAM_SEAS_TOTAL_TONS.toLocaleString()} Tons over {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
-          <p>{TEAM_SEAS_DAILY_RATE.toFixed(3)} tons per day</p>
-        </div>
-      </div>
-    </div>
-  );
+const TEAM_SEAS_INFO = {
+  startDate: new Date('2021-10-29'),
+  endDate: new Date('2024-07-16'),
+  budget: 33790000,
+  poundsCollected: 34080191,
+  kgCollected: 15460000,
+  tonsCollected: 17041,
+  daysActive: 992,
+  dailyRate: 17.178
 };
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
   const leftAxisMax = Math.ceil(maxDailyFlow * 1.1 / 1000) * 1000;
   const rightAxisMax = Math.ceil(leftAxisMax * 365 / 1000000);
-
-  // Create Team Seas overlay data
-  const teamSeasData = data.map(d => ({
-    ...d,
-    teamSeasLine: d.year >= TEAM_SEAS_START && d.year <= TEAM_SEAS_END ? leftAxisMax * 0.9 : null
-  }));
 
   return (
     <div className="relative">
@@ -83,7 +43,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
           <div className="h-[600px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={teamSeasData}
+                data={data}
                 margin={{ top: 20, right: 40, left: 40, bottom: 40 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -108,26 +68,16 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   domain={[0, rightAxisMax]}
                   tickMargin={8}
                 />
-
-                {/* Team Seas indicator line */}
-                <Line
-                  yAxisId="left"
-                  type="step"
-                  dataKey="teamSeasLine"
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  strokeDasharray="3 3"
-                  dot={false}
-                  activeDot={false}
-                  name="Team Seas"
-                  label={<CustomTooltip />}
-                />
-
+                
                 <Tooltip 
-                  content={<CustomTooltip />}
+                  formatter={(value: number, name: string) => {
+                    const formatter = chartConfig.tooltipFormatters[name as keyof typeof chartConfig.tooltipFormatters];
+                    return formatter ? formatter(value) : value.toLocaleString();
+                  }}
                   contentStyle={{
-                    backgroundColor: 'transparent',
-                    border: 'none'
+                    backgroundColor: '#1a1f2d',
+                    border: '1px solid #374151',
+                    color: '#9CA3AF'
                   }}
                 />
                 
@@ -144,6 +94,77 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                 {chartConfig.lines.map((line: ChartLine)=> (
                   <Line key={line.id} {...line} type="monotone" />
                 ))}
+
+                {/* Team Seas Reference Line */}
+                <Line
+                  type="linear"
+                  dataKey="year"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={false}
+                  name="Team Seas Period"
+                  data={[
+                    { year: TEAM_SEAS_INFO.startDate.getFullYear() + 
+                      TEAM_SEAS_INFO.startDate.getMonth() / 12 },
+                    { year: TEAM_SEAS_INFO.endDate.getFullYear() + 
+                      TEAM_SEAS_INFO.endDate.getMonth() / 12 }
+                  ]}
+                />
+
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null;
+
+                    // Check if hovering over Team Seas line
+                    const isTeamSeas = payload.some(p => p.name === "Team Seas Period");
+
+                    return (
+                      <div className="flex gap-2">
+                        {/* Regular tooltip */}
+                        <div className="bg-[#1a1f2d] border border-gray-700 p-3 rounded shadow">
+                          <p className="text-gray-300 mb-1">Year: {label}</p>
+                          {payload.filter(p => p.name !== "Team Seas Period").map((entry, i) => (
+                            <p key={i} className="text-sm" style={{ color: entry.color }}>
+                              {entry.name}: {entry.value.toLocaleString()}
+                            </p>
+                          ))}
+                        </div>
+
+                        {/* Team Seas info box */}
+                        {isTeamSeas && (
+                          <div className="bg-[#1a1f2d] border border-gray-700 p-3 rounded shadow">
+                            <p className="text-green-500 font-medium mb-2">Team Seas</p>
+                            <p className="text-gray-300 text-sm mb-1">MrBeast and Mark Rober</p>
+                            <p className="text-gray-300 text-sm mb-1">
+                              {format(TEAM_SEAS_INFO.startDate, 'MMM d, yyyy')} – 
+                              {format(TEAM_SEAS_INFO.endDate, 'MMM d, yyyy')}
+                            </p>
+                            <p className="text-gray-300 text-sm mb-1">
+                              ${(TEAM_SEAS_INFO.budget / 1000000).toFixed(2)} Million
+                            </p>
+                            <p className="text-gray-300 text-sm mb-1">
+                              {TEAM_SEAS_INFO.poundsCollected.toLocaleString()} lbs of trash
+                            </p>
+                            <p className="text-gray-300 text-sm mb-1">
+                              {TEAM_SEAS_INFO.kgCollected.toLocaleString()} KG
+                            </p>
+                            <p className="text-gray-300 text-sm mb-1">
+                              {TEAM_SEAS_INFO.tonsCollected.toLocaleString()} Tons over {TEAM_SEAS_INFO.daysActive} days
+                            </p>
+                            <p className="text-gray-300 text-sm">
+                              {TEAM_SEAS_INFO.dailyRate} tons per day
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }}
+                  contentStyle={{
+                    backgroundColor: 'transparent',
+                    border: 'none'
+                  }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
