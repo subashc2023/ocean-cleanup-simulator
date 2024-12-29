@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
  */
 const CleanupSimulator = () => {
   const [annualBudget, setAnnualBudget] = useState(10000000000);
-  const [costPerKg, setCostPerKg] = useState(3.5);
+  const [costPerKg, setCostPerKg] = useState(5.22 / 0.93);
   const [startYear, setStartYear] = useState(1991);
   const [endYear, setEndYear] = useState(2035);
   const [data, setData] = useState<DataPoint[]>([]);
@@ -278,6 +278,55 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
     }
   };
 
+  const parseBudgetInput = (input: string): number | null => {
+    const match = input.trim().toUpperCase().match(/^(\d+\.?\d*)\s*(M|B|T)$/);
+    if (!match) return null;
+
+    const [_, number, unit] = match;
+    const value = parseFloat(number);
+    
+    switch(unit) {
+      case 'M': return value * 1000000;
+      case 'B': return value * 1000000000;
+      case 'T': return value * 1000000000000;
+      default: return null;
+    }
+  };
+
+  const formatBudgetInput = (value: number): string => {
+    if (value >= 1000000000000) return `${(value / 1000000000000).toFixed(1)}T`;
+    if (value >= 1000000000) return `${(value / 1000000000).toFixed(1)}B`;
+    return `${(value / 1000000).toFixed(1)}M`;
+  };
+
+  const logBudgetToSlider = (value: number): number => {
+    // Convert budget value to slider value (0-100)
+    const minBudget = Math.log(100000000); // 100M
+    const maxBudget = Math.log(1000000000000); // 1T
+    const scale = (maxBudget - minBudget) / 100;
+    return (Math.log(value) - minBudget) / scale;
+  };
+
+  const sliderToBudget = (value: number): number => {
+    // Convert slider value (0-100) to budget
+    const minBudget = Math.log(100000000); // 100M
+    const maxBudget = Math.log(1000000000000); // 1T
+    const scale = (maxBudget - minBudget) / 100;
+    return Math.round(Math.exp(minBudget + scale * value));
+  };
+
+  const handleBudgetTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const parsed = parseBudgetInput(e.target.value);
+    if (parsed !== null && parsed >= 100000000 && parsed <= 1000000000000) {
+      setAnnualBudget(parsed);
+    }
+  };
+
+  const handleBudgetSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setAnnualBudget(sliderToBudget(value));
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-8 bg-[#0d1117]">
       <div className="space-y-4">
@@ -298,20 +347,18 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 <div className="flex items-center gap-4">
                   <input
                     type="range"
-                    min="100000000"
-                    max="150000000000"
-                    step="100000000"
-                    value={annualBudget}
-                    onChange={(e) => setAnnualBudget(Number(e.target.value))}
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={logBudgetToSlider(annualBudget)}
+                    onChange={handleBudgetSliderChange}
                     className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
                   />
                   <input
-                    type="number"
-                    min="100000000"
-                    max="150000000000"
-                    step="100000000"
-                    value={annualBudget}
-                    onChange={handleBudgetInputChange}
+                    type="text"
+                    value={formatBudgetInput(annualBudget)}
+                    onChange={handleBudgetTextChange}
+                    placeholder="10B"
                     className="w-24 bg-gray-800 text-white border-gray-700 rounded-md px-2 py-1 text-sm"
                   />
                 </div>
@@ -513,6 +560,8 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
           </li>
           <li>Pre-{startYear} accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
+          <li>Default cost per kg based on The Ocean Cleanup 2024 Report (€5.22/kg)</li>
+          <li>Exchange rates updated daily from exchangerate-api.com</li>
         </ul>
       </div>
     </div>
