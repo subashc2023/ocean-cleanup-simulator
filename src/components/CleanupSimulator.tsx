@@ -485,10 +485,10 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
                     angle: -90, 
                     position: 'outside',
-                    offset: -20,
+                    offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={16}
+                  tickMargin={0}
                   tickFormatter={(value) => (value / 1000).toFixed(0)}
                 />
                 <YAxis 
@@ -498,10 +498,10 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'outside',
-                    offset: -20,
+                    offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={16}
+                  tickMargin={0}
                 />
                 <Tooltip 
                   formatter={(value: number, name) => {
@@ -586,7 +586,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
           </li>
           <li>Pre-{startYear} accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
-          <li>This simulation does not account for the difference between the cost of removing plastic(Ocean plastic) and the cost of preventing it(River Plastic).</li>
+          <li>This simulation does not account for the difference between the cost of removing plastic (Ocean plastic) and the cost of preventing it (River Plastic).</li>
           <li>Ocean plastic is 90%+ of the total plastic waste, and is 10x more expensive per kg to capture.</li>
         </ul>
       </div>
