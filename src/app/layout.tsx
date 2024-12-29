@@ -1,4 +1,7 @@
 import './globals.css';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
   children,
@@ -6,14 +9,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="bg-[#0d1117]">
-      <head>
-        <title>Ocean Cleanup Simulator</title>
-      </head>
-      <body className="min-h-screen bg-[#0d1117]">
-        <main className="min-h-screen bg-[#0d1117]">
-          {children}
-        </main>
+    <html lang="en">
+      <body className={inter.className}>
+        <div className="dither-pattern" />
+        {children}
       </body>
     </html>
   );

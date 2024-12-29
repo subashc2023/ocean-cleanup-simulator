@@ -15,7 +15,7 @@ export const CountryVisualization = () => (
             }}
           >
             <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-gray-100 text-xs text-center font-medium">
-              {country.name} ({country.percent}%)
+              {country.name}{country.name !== 'Vietnam' && country.name !== 'Bangladesh' && country.name !== 'Thailand' ? ` (${country.percent}%)` : ''}
             </div>
           </div>
         ))}

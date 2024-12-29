@@ -23,7 +23,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
       {/* Left Y-axis label */}
       <div 
         className="absolute -left-16 top-1/2 -translate-y-1/2 -rotate-90 text-gray-300 text-sm whitespace-nowrap"
-        style={{ marginLeft: '-20px' }}
+        style={{ marginLeft: '-40px' }}
       >
         Daily Plastic Flow (Thousands of Metric Tons/Day)
       </div>

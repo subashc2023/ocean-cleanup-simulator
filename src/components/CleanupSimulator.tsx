@@ -193,8 +193,8 @@ const CleanupSimulator = () => {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-4 bg-[#0d1117]">
       <SimulatorHeader 
-        title="Plastic Waste Cleanup Simulator"
-        description="Explore scenarios for global plastic waste cleanup efforts based on different budget allocations and cost assumptions."
+        title="Tides Of Change"
+        description="Explore scenarios for global plastic waste cleanup efforts."
       />
 
       <SimulatorControls
