@@ -556,11 +556,10 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
               <span className="text-gray-400">Loading EUR...</span>
             ) : (
               `€${(costPerKg * 1000 * exchangeRate).toLocaleString()}`
-            )}
+            )} As per The Ocean Cleanup 2024
           </li>
           <li>Pre-{startYear} accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
-          <li>Default cost per kg based on The Ocean Cleanup 2024 Report (€5.22/kg)</li>
           <li>This simulation does not account for the difference between the cost of removing plastic(Ocean plastic) and the cost of preventing it(River Plastic).</li>
           <li>Ocean plastic is 90%+ of the total plastic waste, and is 10x more expensive per kg to capture.</li>
         </ul>
