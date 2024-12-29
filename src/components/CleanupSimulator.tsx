@@ -464,33 +464,40 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 data={data}
                 margin={{
                   top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
+                  right: 80,
+                  left: 80,
+                  bottom: 30
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis 
                   dataKey="year" 
-                  label={{ value: 'Year', position: 'bottom', offset: 0 }}
+                  label={{ 
+                    value: 'Year', 
+                    position: 'bottom', 
+                    offset: -10,
+                    fill: '#9CA3AF'
+                  }}
                 />
                 <YAxis 
                   yAxisId="left"
                   label={{ 
-                    value: 'Daily Change (Metric Tons)', 
+                    value: 'Daily Plastic Flow (Metric Tons/Day)', 
                     angle: -90, 
                     position: 'insideLeft',
-                    offset: -40
+                    offset: -60,
+                    style: { fill: '#9CA3AF' }
                   }}
                 />
                 <YAxis 
                   yAxisId="right"
                   orientation="right"
                   label={{ 
-                    value: 'Total Accumulation (Million Tons)', 
+                    value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'insideRight',
-                    offset: -40
+                    offset: -60,
+                    style: { fill: '#9CA3AF' }
                   }}
                 />
                 <Tooltip 
@@ -504,7 +511,14 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     }
                   }}
                 />
-                <Legend />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  wrapperStyle={{
+                    paddingTop: '20px',
+                    marginBottom: '-10px'
+                  }}
+                />
                 <Line 
                   yAxisId="left"
                   type="monotone" 
