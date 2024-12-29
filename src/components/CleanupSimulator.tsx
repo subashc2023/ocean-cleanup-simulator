@@ -80,14 +80,17 @@ const CleanupSimulator = () => {
     for (let year = startYear; year <= endYear; year++) {
       const wastePerDay = calculateWastePerDay(year, 0);
       
-      // Calculate total removal including Team Seas
-      const teamSeasRemoval = (year >= TEAM_SEAS_START && year <= TEAM_SEAS_END) 
+      // Calculate Team Seas effect on inflow
+      const teamSeasEffect = (year >= TEAM_SEAS_START && year <= TEAM_SEAS_END) 
         ? TEAM_SEAS_DAILY_RATE 
         : 0;
-      const simulatedRemoval = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
-      const totalRemovalPerDay = teamSeasRemoval + simulatedRemoval;
+
+      // Apply Team Seas reduction to the inflow before calculating removal
+      const adjustedWastePerDay = wastePerDay - teamSeasEffect;
       
-      const netDailyChange = wastePerDay - totalRemovalPerDay;
+      // Calculate cleanup removal
+      const simulatedRemoval = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
+      const netDailyChange = adjustedWastePerDay - simulatedRemoval;
       
       // Calculate yearly accumulation using trapezoidal integration
       const yearlyAmount = ((netDailyChange + previousNetChange) / 2) * 365;
