@@ -2,14 +2,14 @@ import { PRODUCTION_START_YEAR } from '@/lib/constants';
 
 export interface RiverEffect {
   yearInstalled: number;
-  flowReduction: number;  // tons per day prevented
+  flowReduction: number;
   installationCost: number;
 }
 
 export const calculateWastePerDay = (
   year: number, 
   riverInterceptions: RiverEffect[] = [],
-  learningRate: number = 0.85  // 15% cost reduction for each doubling of capacity
+  learningRate: number = 0.85
 ): number => {
   const baseProduction = 2; // Million metric tons in 1950
   const growthRate = 0.0743; // Historical growth rate
