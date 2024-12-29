@@ -24,7 +24,7 @@ const CleanupSimulator = () => {
   const [costPerKg, setCostPerKg] = useState(3.5);
   const [startYear, setStartYear] = useState(1991);
   const [endYear, setEndYear] = useState(2035);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<DataPoint[]>([]);
   const [zeroYear, setZeroYear] = useState(null);
   
   // Constants
@@ -33,7 +33,7 @@ const CleanupSimulator = () => {
   const MAX_PROJECTION_YEAR = 2100;
   
   // Calculate daily waste production based on historical growth patterns
-  const calculateWastePerDay = (year) => {
+  const calculateWastePerDay = (year: number): number => {
     const baseProduction = 2; // Million metric tons in 1950
     const growthRate = 0.0743; // Historical growth rate
     const wasteRate = 0.02 + (year - 1950) * 0.0001; // Increasing waste rate
@@ -43,7 +43,7 @@ const CleanupSimulator = () => {
   };
 
   // Calculate accumulated waste up to a given year
-  const calculateHistoricalAccumulation = (upToYear) => {
+  const calculateHistoricalAccumulation = (upToYear: number): number => {
     let accumulation = 0;
     
     for (let year = PRODUCTION_START_YEAR; year < upToYear; year++) {
@@ -57,7 +57,16 @@ const CleanupSimulator = () => {
   };
 
   // Find the year when total waste reaches zero by calculating the y-intercept
-  const calculateZeroYear = (latestData) => {
+  interface DataPoint {
+  year: number;
+  originalWastePerDay: number;
+  removalPerDay: number;
+  netDailyChange: number;
+  cumulativeMillionTons: number;
+  cumulativeNoCleanupMillionTons: number;
+}
+
+const calculateZeroYear = (latestData: DataPoint | undefined): number | null => {
     if (!latestData || !latestData.cumulativeMillionTons) return null;
     
     const costPerTon = costPerKg * 1000;
@@ -130,20 +139,20 @@ const CleanupSimulator = () => {
     setZeroYear(calculateZeroYear(results[results.length - 1]));
   }, [annualBudget, costPerKg, startYear, endYear]);
 
-  const formatBudget = (value) => {
+  const formatBudget = (value: number): string => {
     return value >= 1000000000 
       ? `$${(value / 1000000000).toFixed(1)}B`
       : `$${(value / 1000000).toFixed(1)}M`;
   };
 
-  const handleCostChange = (e) => {
+  const handleCostChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = parseFloat(e.target.value);
     if (!isNaN(value) && value > 0) {
       setCostPerKg(value);
     }
   };
 
-  const handleYearChange = (type, e) => {
+  const handleYearChange = (type: 'start' | 'end', e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = parseInt(e.target.value);
     if (!isNaN(value)) {
       if (type === 'start') {
