@@ -458,15 +458,15 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
 
       <Card className="bg-white shadow-md">
         <CardContent className="p-6">
-          <div className="h-96">
+          <div className="h-[500px] px-4">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={data}
                 margin={{
-                  top: 20,
-                  right: 80,
-                  left: 80,
-                  bottom: 30
+                  top: 30,
+                  right: 100,
+                  left: 100,
+                  bottom: 50
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -475,7 +475,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   label={{ 
                     value: 'Year', 
                     position: 'bottom', 
-                    offset: -10,
+                    offset: -20,
                     fill: '#9CA3AF'
                   }}
                 />
@@ -485,7 +485,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Daily Plastic Flow (Metric Tons/Day)', 
                     angle: -90, 
                     position: 'insideLeft',
-                    offset: -60,
+                    offset: -70,
                     style: { fill: '#9CA3AF' }
                   }}
                 />
@@ -496,7 +496,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'insideRight',
-                    offset: -60,
+                    offset: -70,
                     style: { fill: '#9CA3AF' }
                   }}
                 />
@@ -516,6 +516,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   height={36}
                   wrapperStyle={{
                     paddingTop: '20px',
+                    paddingBottom: '20px',
                     marginBottom: '-10px'
                   }}
                 />
