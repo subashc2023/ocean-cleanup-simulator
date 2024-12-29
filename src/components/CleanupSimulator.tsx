@@ -464,7 +464,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 data={data}
                 margin={{
                   top: 20,
-                  right: 90,
+                  right: 120,
                   left: 30,
                   bottom: 40
                 }}
@@ -498,11 +498,11 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'outside',
-                    offset: 20,
+                    offset: 35,
                     style: { fill: '#9CA3AF' }
                   }}
                   tickMargin={0}
-                  dx={20}
+                  dx={25}
                 />
                 <Tooltip 
                   formatter={(value: number, name) => {
@@ -583,7 +583,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
               <span className="text-gray-400">Loading EUR...</span>
             ) : (
               `€${(costPerKg * 1000 * exchangeRate).toLocaleString()}`
-            )} As per The Ocean Cleanup 2024
+            )} Default value of 5.22 Euros/ton As per The Ocean Cleanup 2024
           </li>
           <li>Pre-{startYear} accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
