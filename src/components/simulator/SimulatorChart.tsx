@@ -81,7 +81,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   tickMargin={8}
                 />
                 
-                {/* Team Seas Reference Line */}
+                {/* Start marker */}
                 <ReferenceLine
                   x={TEAM_SEAS_START}
                   stroke="#10B981"
@@ -94,23 +94,22 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                     fontSize: 12
                   }}
                 />
+
+                {/* End marker */}
                 <ReferenceLine
                   x={TEAM_SEAS_END}
                   stroke="#10B981"
                   strokeWidth={2}
                   strokeDasharray="3 3"
                 />
-                
-                {/* Horizontal line connecting the vertical lines */}
+
+                {/* Horizontal reference line */}
                 <ReferenceLine
-                  y={leftAxisMax * 0.9} // Position near top
-                  segment={[
-                    { x: TEAM_SEAS_START },
-                    { x: TEAM_SEAS_END }
-                  ]}
+                  y={leftAxisMax * 0.9}
                   stroke="#10B981"
                   strokeWidth={2}
                   strokeDasharray="3 3"
+                  isFront={true}
                   label={<TeamSeasTooltip />}
                 />
 
