@@ -457,16 +457,16 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
       </Card>
 
       <Card className="bg-[#1a1f2d] shadow-md">
-        <CardContent className="p-6">
-          <div className="h-[600px] p-8">
+        <CardContent className="p-0">
+          <div className="h-[600px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={data}
                 margin={{
-                  top: 40,
-                  right: 120,
-                  left: 120,
-                  bottom: 60
+                  top: 20,
+                  right: 90,
+                  left: 90,
+                  bottom: 40
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -474,8 +474,8 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   dataKey="year" 
                   label={{ 
                     value: 'Year', 
-                    position: 'bottom', 
-                    offset: -25,
+                    position: 'insideBottom',
+                    offset: -10,
                     fill: '#9CA3AF'
                   }}
                 />
@@ -485,7 +485,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Daily Plastic Flow (Metric Tons/Day)', 
                     angle: -90, 
                     position: 'insideLeft',
-                    offset: -80,
+                    offset: -15,
                     style: { fill: '#9CA3AF' }
                   }}
                 />
@@ -496,7 +496,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'insideRight',
-                    offset: -80,
+                    offset: -15,
                     style: { fill: '#9CA3AF' }
                   }}
                 />
@@ -518,11 +518,11 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 />
                 <Legend 
                   verticalAlign="bottom" 
-                  height={50}
+                  height={36}
                   wrapperStyle={{
-                    paddingTop: '25px',
-                    paddingBottom: '25px',
-                    marginBottom: '-15px'
+                    paddingTop: '10px',
+                    paddingBottom: '10px',
+                    marginBottom: '-5px'
                   }}
                 />
                 <Line 
