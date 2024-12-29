@@ -34,12 +34,15 @@ const CleanupSimulator = () => {
   const { exchangeRate, isLoadingRate } = useExchangeRate();
 
   // Calculate daily waste production based on historical growth patterns
-  const calculateWastePerDay = (year: number): number => {
+  const calculateWastePerDay = (year: number, removalCapacity: number = 0): number => {
     const baseProduction = 2; // Million metric tons in 1950
     const growthRate = 0.0743; // Historical growth rate
     const wasteRate = 0.02 + (year - 1950) * 0.0001; // Increasing waste rate
     
-    const totalProduction = baseProduction * Math.exp(growthRate * (year - 1950));
+    // Use adjusted growth rate based on cleanup capacity
+    const adjustedGrowthRate = calculateAdjustedGrowthRate(year, removalCapacity);
+    
+    const totalProduction = baseProduction * Math.exp(adjustedGrowthRate * (year - 1950));
     return (totalProduction * wasteRate * 1000000) / 365;
   };
 
@@ -79,7 +82,7 @@ const CleanupSimulator = () => {
     
     // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
-      const wastePerDay = calculateWastePerDay(year);
+      const wastePerDay = calculateWastePerDay(year, removalCapacity);
       const removalPerDay = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
       const netDailyChange = wastePerDay - removalPerDay;
       
