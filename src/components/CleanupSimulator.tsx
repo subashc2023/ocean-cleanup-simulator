@@ -264,6 +264,20 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
 
   const initialAccumulation = data[0]?.cumulativeNoCleanupMillionTons || 0;
 
+  const handleBudgetInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    if (!isNaN(value) && value >= 100000000 && value <= 150000000000) {
+      setAnnualBudget(value);
+    }
+  };
+
+  const handleCostInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    if (!isNaN(value) && value >= 0.1 && value <= 100) {
+      setCostPerKg(Number(value.toFixed(2)));
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-8 bg-[#0d1117]">
       <div className="space-y-4">
@@ -277,21 +291,32 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
         <CardContent className="p-6">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-200 mb-2">
                   Annual Cleanup Budget: {formatBudget(annualBudget)}
                 </label>
-                <input
-                  type="range"
-                  min="100000000"
-                  max="150000000000"
-                  step="100000000"
-                  value={annualBudget}
-                  onChange={(e) => setAnnualBudget(Number(e.target.value))}
-                  className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                />
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min="100000000"
+                    max="150000000000"
+                    step="100000000"
+                    value={annualBudget}
+                    onChange={(e) => setAnnualBudget(Number(e.target.value))}
+                    className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <input
+                    type="number"
+                    min="100000000"
+                    max="150000000000"
+                    step="100000000"
+                    value={annualBudget}
+                    onChange={handleBudgetInputChange}
+                    className="w-24 bg-gray-800 text-white border-gray-700 rounded-md px-2 py-1 text-sm"
+                  />
+                </div>
               </div>
-              <div>
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-200 mb-2">
                   Cost per Kilogram: ${costPerKg.toFixed(2)} 
                   {isLoadingRate ? (
@@ -300,15 +325,26 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     <span>(€{(costPerKg * exchangeRate).toFixed(2)})</span>
                   )}
                 </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="1"
-                  value={priceToLogSlider(costPerKg)}
-                  onChange={handleSliderChange}
-                  className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                />
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={priceToLogSlider(costPerKg)}
+                    onChange={handleSliderChange}
+                    className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <input
+                    type="number"
+                    min="0.1"
+                    max="100"
+                    step="0.1"
+                    value={costPerKg}
+                    onChange={handleCostInputChange}
+                    className="w-24 bg-gray-800 text-white border-gray-700 rounded-md px-2 py-1 text-sm"
+                  />
+                </div>
                 <div className="mt-1 text-xs text-gray-400 flex justify-between">
                   <span>$0.10/kg</span>
                   <span>$1/kg</span>
