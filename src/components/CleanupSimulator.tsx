@@ -464,7 +464,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 data={data}
                 margin={{
                   top: 20,
-                  right: 90,
+                  right: 30,
                   left: 30,
                   bottom: 40
                 }}
@@ -485,7 +485,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
                     angle: -90, 
                     position: 'outside',
-                    offset: 0,
+                    offset: 30,
                     style: { fill: '#9CA3AF' }
                   }}
                   tickMargin={0}
@@ -582,7 +582,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
               <span className="text-gray-400">Loading EUR...</span>
             ) : (
               `€${(costPerKg * 1000 * exchangeRate).toLocaleString()}`
-            )} Default value of 5.22 Euros/ton As per The Ocean Cleanup 2024
+            )}. The default value of 5.22 Euros/Ton is as per The Ocean Cleanup 2024
           </li>
           <li>Pre-{startYear} accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
