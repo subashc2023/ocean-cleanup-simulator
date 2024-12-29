@@ -2,18 +2,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
 import type { ChartLine, SimulatorChartProps } from './types';
-import { format } from 'date-fns';
-
-const TEAM_SEAS_INFO = {
-  startDate: new Date('2021-10-29'),
-  endDate: new Date('2024-07-16'),
-  budget: 33790000,
-  poundsCollected: 34080191,
-  kgCollected: 15460000,
-  tonsCollected: 17041,
-  daysActive: 992,
-  dailyRate: 17.178
-};
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
@@ -55,6 +43,8 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                     offset: -10,
                     fill: '#9CA3AF'
                   }}
+                  tickFormatter={(value) => Math.round(value)}
+                  allowDecimals={false}
                 />
                 <YAxis 
                   yAxisId="left"
@@ -94,77 +84,6 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                 {chartConfig.lines.map((line: ChartLine)=> (
                   <Line key={line.id} {...line} type="monotone" />
                 ))}
-
-                {/* Team Seas Reference Line */}
-                <Line
-                  type="linear"
-                  dataKey="year"
-                  stroke="#22c55e"
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={false}
-                  name="Team Seas Period"
-                  data={[
-                    { year: TEAM_SEAS_INFO.startDate.getFullYear() + 
-                      TEAM_SEAS_INFO.startDate.getMonth() / 12 },
-                    { year: TEAM_SEAS_INFO.endDate.getFullYear() + 
-                      TEAM_SEAS_INFO.endDate.getMonth() / 12 }
-                  ]}
-                />
-
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (!active || !payload?.length) return null;
-
-                    // Check if hovering over Team Seas line
-                    const isTeamSeas = payload.some(p => p.name === "Team Seas Period");
-
-                    return (
-                      <div className="flex gap-2">
-                        {/* Regular tooltip */}
-                        <div className="bg-[#1a1f2d] border border-gray-700 p-3 rounded shadow">
-                          <p className="text-gray-300 mb-1">Year: {label}</p>
-                          {payload.filter(p => p.name !== "Team Seas Period").map((entry, i) => (
-                            <p key={i} className="text-sm" style={{ color: entry.color }}>
-                              {entry.name}: {entry.value.toLocaleString()}
-                            </p>
-                          ))}
-                        </div>
-
-                        {/* Team Seas info box */}
-                        {isTeamSeas && (
-                          <div className="bg-[#1a1f2d] border border-gray-700 p-3 rounded shadow">
-                            <p className="text-green-500 font-medium mb-2">Team Seas</p>
-                            <p className="text-gray-300 text-sm mb-1">MrBeast and Mark Rober</p>
-                            <p className="text-gray-300 text-sm mb-1">
-                              {format(TEAM_SEAS_INFO.startDate, 'MMM d, yyyy')} – 
-                              {format(TEAM_SEAS_INFO.endDate, 'MMM d, yyyy')}
-                            </p>
-                            <p className="text-gray-300 text-sm mb-1">
-                              ${(TEAM_SEAS_INFO.budget / 1000000).toFixed(2)} Million
-                            </p>
-                            <p className="text-gray-300 text-sm mb-1">
-                              {TEAM_SEAS_INFO.poundsCollected.toLocaleString()} lbs of trash
-                            </p>
-                            <p className="text-gray-300 text-sm mb-1">
-                              {TEAM_SEAS_INFO.kgCollected.toLocaleString()} KG
-                            </p>
-                            <p className="text-gray-300 text-sm mb-1">
-                              {TEAM_SEAS_INFO.tonsCollected.toLocaleString()} Tons over {TEAM_SEAS_INFO.daysActive} days
-                            </p>
-                            <p className="text-gray-300 text-sm">
-                              {TEAM_SEAS_INFO.dailyRate} tons per day
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }}
-                  contentStyle={{
-                    backgroundColor: 'transparent',
-                    border: 'none'
-                  }}
-                />
               </LineChart>
             </ResponsiveContainer>
           </div>

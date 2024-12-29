@@ -84,7 +84,7 @@ export const SimulatorControls = ({
                 value={priceToLogSlider(costPerKg)}
                 onChange={(e) => {
                   const sliderValue = Number(e.target.value);
-                  const newPrice = logSliderToPrice(sliderValue);
+                  const newPrice = Number(logSliderToPrice(sliderValue).toFixed(2));
                   onCostChange({
                     ...e,
                     target: { ...e.target, value: newPrice.toString() }
@@ -96,9 +96,17 @@ export const SimulatorControls = ({
                 type="number"
                 min="0.1"
                 max="100"
-                step="0.1"
-                value={costPerKg}
-                onChange={onCostChange}
+                step="0.01"
+                value={costPerKg.toFixed(2)}
+                onChange={(e) => {
+                  const value = Number(Number(e.target.value).toFixed(2));
+                  if (!isNaN(value) && value >= 0.1 && value <= 100) {
+                    onCostChange({
+                      ...e,
+                      target: { ...e.target, value: value.toString() }
+                    });
+                  }
+                }}
                 className="w-24 bg-gray-800 text-white border-gray-700 rounded-md px-2 py-1 text-sm"
               />
             </div>
