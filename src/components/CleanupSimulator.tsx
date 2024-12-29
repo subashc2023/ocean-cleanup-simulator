@@ -457,119 +457,116 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
       </Card>
 
       <Card className="bg-[#1a1f2d] shadow-md rounded-none">
-        <CardContent className="p-4">
-          <div className="relative">
-            <div className="h-[600px] md:h-[700px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={data}
-                  margin={{
-                    top: 40,
-                    right: 160,
-                    left: 80,
-                    bottom: 60
+        <CardContent className="p-0">
+          <div className="h-[600px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={data}
+                margin={{
+                  top: 20,
+                  right: 90,
+                  left: 30,
+                  bottom: 40
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis 
+                  dataKey="year" 
+                  label={{ 
+                    value: 'Year', 
+                    position: 'insideBottom',
+                    offset: -10,
+                    fill: '#9CA3AF'
                   }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis 
-                    dataKey="year" 
-                    label={{ 
-                      value: 'Year', 
-                      position: 'insideBottom',
-                      offset: -10,
-                      fill: '#9CA3AF'
-                    }}
-                  />
-                  <YAxis 
-                    yAxisId="left"
-                    label={{ 
-                      value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
-                      angle: -90, 
-                      position: 'outside',
-                      offset: 0,
-                      style: { fill: '#9CA3AF' }
-                    }}
-                    tickMargin={0}
-                    tickFormatter={(value) => (value / 1000).toFixed(0)}
-                  />
-                  <YAxis 
-                    yAxisId="right"
-                    orientation="right"
-                    label={{ 
-                      value: 'Total Accumulated Plastic (Million Tons)', 
-                      angle: 90, 
-                      position: 'outside',
-                      offset: 35,
-                      style: { fill: '#9CA3AF' }
-                    }}
-                    tickMargin={0}
-                    dx={25}
-                  />
-                  <Tooltip 
-                    formatter={(value: number, name) => {
-                      switch(name) {
-                        case "Original Total":
-                        case "New Total":
-                          return `${value.toLocaleString()} million tons`;
-                        case "Original Inflow":
-                        case "Net Inflow with Cleanup":
-                          return `${value.toLocaleString()} tons/day`;
-                        default:
-                          return value.toLocaleString();
-                      }
-                    }}
-                    contentStyle={{
-                      backgroundColor: '#1a1f2d',
-                      border: '1px solid #374151',
-                      color: '#9CA3AF'
-                    }}
-                  />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36}
-                    wrapperStyle={{
-                      paddingTop: '10px',
-                      paddingBottom: '10px',
-                      marginBottom: '-5px'
-                    }}
-                  />
-                  <Line 
-                    yAxisId="left"
-                    type="monotone" 
-                    dataKey="originalWastePerDay" 
-                    name="Original Inflow"
-                    stroke="#dc2626" 
-                    strokeWidth={2}
-                  />
-                  <Line 
-                    yAxisId="left"
-                    type="monotone" 
-                    dataKey="netDailyChange" 
-                    name="Net Inflow with Cleanup"
-                    stroke="#ea580c" 
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                  />
-                  <Line 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="cumulativeNoCleanupMillionTons" 
-                    name="Original Total"
-                    stroke="#2563eb" 
-                    strokeWidth={2}
-                  />
-                  <Line 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="cumulativeMillionTons" 
-                    name="New Total"
-                    stroke="#16a34a" 
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+                />
+                <YAxis 
+                  yAxisId="left"
+                  label={{ 
+                    value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
+                    angle: -90, 
+                    position: 'outside',
+                    offset: 0,
+                    style: { fill: '#9CA3AF' }
+                  }}
+                  tickMargin={0}
+                  tickFormatter={(value) => (value / 1000).toFixed(0)}
+                />
+                <YAxis 
+                  yAxisId="right"
+                  orientation="right"
+                  label={{ 
+                    value: 'Total Accumulated Plastic (Million Tons)', 
+                    angle: 90, 
+                    position: 'outside',
+                    offset: 0,
+                    style: { fill: '#9CA3AF' }
+                  }}
+                  tickMargin={0}
+                />
+                <Tooltip 
+                  formatter={(value: number, name) => {
+                    switch(name) {
+                      case "Original Total":
+                      case "New Total":
+                        return `${value.toLocaleString()} million tons`;
+                      case "Original Inflow":
+                      case "Net Inflow with Cleanup":
+                        return `${value.toLocaleString()} tons/day`;
+                      default:
+                        return value.toLocaleString();
+                    }
+                  }}
+                  contentStyle={{
+                    backgroundColor: '#1a1f2d',
+                    border: '1px solid #374151',
+                    color: '#9CA3AF'
+                  }}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  wrapperStyle={{
+                    paddingTop: '10px',
+                    paddingBottom: '10px',
+                    marginBottom: '-5px'
+                  }}
+                />
+                <Line 
+                  yAxisId="left"
+                  type="monotone" 
+                  dataKey="originalWastePerDay" 
+                  name="Original Inflow"
+                  stroke="#dc2626" 
+                  strokeWidth={2}
+                />
+                <Line 
+                  yAxisId="left"
+                  type="monotone" 
+                  dataKey="netDailyChange" 
+                  name="Net Inflow with Cleanup"
+                  stroke="#ea580c" 
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                />
+                <Line 
+                  yAxisId="right"
+                  type="monotone" 
+                  dataKey="cumulativeNoCleanupMillionTons" 
+                  name="Original Total"
+                  stroke="#2563eb" 
+                  strokeWidth={2}
+                />
+                <Line 
+                  yAxisId="right"
+                  type="monotone" 
+                  dataKey="cumulativeMillionTons" 
+                  name="New Total"
+                  stroke="#16a34a" 
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
