@@ -488,7 +488,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={0}
+                  tickMargin={16}
                   tickFormatter={(value) => (value / 1000).toFixed(0)}
                 />
                 <YAxis 
@@ -501,7 +501,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={0}
+                  tickMargin={16}
                 />
                 <Tooltip 
                   formatter={(value: number, name) => {
