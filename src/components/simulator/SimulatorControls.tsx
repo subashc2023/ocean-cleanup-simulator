@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { PRODUCTION_START_YEAR, MAX_PROJECTION_YEAR } from '@/lib/constants';
 import { logSliderToPrice } from '@/lib/calculations';
+import { YearRangeSlider } from './YearRangeSlider';
 
 interface SimulatorControlsProps {
   annualBudget: number;
@@ -18,6 +19,7 @@ interface SimulatorControlsProps {
   formatBudget: (value: number) => string;
   logBudgetToSlider: (value: number) => number;
   priceToLogSlider: (value: number) => number;
+  onYearRangeChange: (values: [number, number]) => void;
 }
 
 export const SimulatorControls = ({
@@ -34,7 +36,8 @@ export const SimulatorControls = ({
   onYearChange,
   formatBudget,
   logBudgetToSlider,
-  priceToLogSlider
+  priceToLogSlider,
+  onYearRangeChange
 }: SimulatorControlsProps) => (
   <Card className="bg-gray-800 shadow-md rounded-none border border-gray-700">
     <CardContent className="p-6">
@@ -102,33 +105,15 @@ export const SimulatorControls = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">
-              Start Year (min: {PRODUCTION_START_YEAR})
-            </label>
-            <Input
-              type="number"
-              min={PRODUCTION_START_YEAR}
-              max={endYear - 1}
-              value={startYear}
-              onChange={(e) => onYearChange('start', e)}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">
-              End Year (max: {MAX_PROJECTION_YEAR})
-            </label>
-            <Input
-              type="number"
-              min={startYear + 1}
-              max={MAX_PROJECTION_YEAR}
-              value={endYear}
-              onChange={(e) => onYearChange('end', e)}
-              className="w-full"
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-200 mb-2">
+            Year Range
+          </label>
+          <YearRangeSlider
+            startYear={startYear}
+            endYear={endYear}
+            onChange={onYearRangeChange}
+          />
         </div>
       </div>
     </CardContent>
