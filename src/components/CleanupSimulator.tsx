@@ -483,12 +483,12 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   yAxisId="left"
                   label={{ 
                     value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
-                    angle: 90, 
+                    angle: -90, 
                     position: 'outside',
-                    offset: 40,
+                    offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={8}
+                  tickMargin={0}
                   tickFormatter={(value) => (value / 1000).toFixed(0)}
                 />
                 <YAxis 
@@ -498,10 +498,10 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'outside',
-                    offset: -40,
+                    offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={8}
+                  tickMargin={0}
                   dx={0}
                 />
                 <Tooltip 
