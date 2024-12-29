@@ -2,9 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  background-color: #0d1117 !important;
+:root {
+  background-color: #0d1117;
+}
+
+html {
+  background-color: #0d1117;
+  min-height: 100%;
+}
+
+body {
+  background-color: #0d1117;
   color: white;
+  min-height: 100vh;
+}
+
+#__next {
+  background-color: #0d1117;
   min-height: 100vh;
 }
 

@@ -6,14 +6,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-[#0d1117]">
       <head>
         <title>Ocean Cleanup Simulator</title>
       </head>
       <body className="min-h-screen bg-[#0d1117]">
-        <div className="min-h-screen bg-[#0d1117]">
+        <main className="min-h-screen bg-[#0d1117]">
           {children}
-        </div>
+        </main>
       </body>
     </html>
   );

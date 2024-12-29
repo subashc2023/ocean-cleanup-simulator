@@ -176,7 +176,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
   const initialAccumulation = data[0]?.cumulativeNoCleanupMillionTons || 0;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-8 bg-[#0d1117]">
       <div className="space-y-4">
         <h1 className="text-3xl font-bold tracking-tight text-white">Plastic Waste Cleanup Simulator</h1>
         <p className="text-gray-300">
