@@ -5,7 +5,6 @@ import {
   TEAM_SEAS_END,
   TEAM_SEAS_TOTAL_TONS
 } from '@/lib/constants';
-import { TeamSeasTooltip } from './TeamSeasTooltip';
 
 interface NotesProps {
   startYear: number;
@@ -40,10 +39,9 @@ export const NotesAndAssumptions = ({
       <li>Projections assume constant growth rates and cleanup costs</li>
       <li>This simulation does not account for the difference between the cost of removing plastic(Ocean plastic) and the cost of preventing it(River Plastic).</li>
       <li>Ocean plastic is 90%+ of the total plastic waste, and is 10x more expensive per kg to capture.</li>
-      <li className="flex items-center gap-2">
+      <li>
         Historical data includes Team Seas' cleanup of {TEAM_SEAS_TOTAL_TONS.toLocaleString()} tons 
         between {TEAM_SEAS_START}-{TEAM_SEAS_END}
-        <TeamSeasTooltip />
       </li>
     </ul>
   </div>
