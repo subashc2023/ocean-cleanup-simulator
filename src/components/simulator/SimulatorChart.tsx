@@ -1,12 +1,22 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
 import type { ChartLine, SimulatorChartProps } from './types';
+import { TEAM_SEAS_START, TEAM_SEAS_END } from '@/lib/constants';
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
   const leftAxisMax = Math.ceil(maxDailyFlow * 1.1 / 1000) * 1000;
   const rightAxisMax = Math.ceil(leftAxisMax * 365 / 1000000);
+
+  // Create reference line data
+  const teamSeasLine = {
+    x1: TEAM_SEAS_START,
+    x2: TEAM_SEAS_END,
+    y: leftAxisMax * 0.95, // Position near top
+    stroke: 'rgba(234, 179, 8, 0.5)', // yellow-500/50
+    strokeWidth: 2
+  };
 
   return (
     <div className="relative">
@@ -79,6 +89,16 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                     paddingBottom: '10px',
                     marginBottom: '-5px'
                   }}
+                />
+                
+                <ReferenceLine
+                  segment={[
+                    { x: teamSeasLine.x1, y: teamSeasLine.y },
+                    { x: teamSeasLine.x2, y: teamSeasLine.y }
+                  ]}
+                  stroke={teamSeasLine.stroke}
+                  strokeWidth={teamSeasLine.strokeWidth}
+                  yAxisId="left"
                 />
                 
                 {chartConfig.lines.map((line: ChartLine)=> (
