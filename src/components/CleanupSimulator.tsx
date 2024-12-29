@@ -501,7 +501,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     offset: 20,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={8}
+                  tickMargin={0}
                   dx={20}
                 />
                 <Tooltip 
