@@ -32,7 +32,7 @@ The simulator uses an exponential growth model for plastic production and waste 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ocean-cleanup-simulator.git
+git clone https://github.com/subashc2023/ocean-cleanup-simulator
 cd ocean-cleanup-simulator
 ```
 
@@ -87,4 +87,4 @@ This simulator was created to help visualize and understand the scale of ocean p
 
 [Subash Chandra] - [subashc2023@gmail.com]
 
-Project Link: https://github.com/yourusername/ocean-cleanup-simulator
+Project Link: https://github.com/subashc2023/ocean-cleanup-simulator
