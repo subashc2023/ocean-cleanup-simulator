@@ -464,7 +464,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 data={data}
                 margin={{
                   top: 20,
-                  right: 30,
+                  right: 90,
                   left: 30,
                   bottom: 40
                 }}
@@ -485,7 +485,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
                     angle: -90, 
                     position: 'outside',
-                    offset: 30,
+                    offset: 40,
                     style: { fill: '#9CA3AF' }
                   }}
                   tickMargin={0}
@@ -498,10 +498,11 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'outside',
-                    offset: 50,
+                    offset: 30,
                     style: { fill: '#9CA3AF' }
                   }}
-                  tickMargin={0}
+                  tickMargin={8}
+                  dx={20}
                 />
                 <Tooltip 
                   formatter={(value: number, name) => {
