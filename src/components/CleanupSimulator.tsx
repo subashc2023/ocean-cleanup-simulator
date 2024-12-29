@@ -483,7 +483,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   yAxisId="left"
                   label={{ 
                     value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
-                    angle: -90, 
+                    angle: 90, 
                     position: 'outside',
                     offset: 40,
                     style: { fill: '#9CA3AF' }
