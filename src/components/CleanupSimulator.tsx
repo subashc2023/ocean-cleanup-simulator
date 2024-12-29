@@ -182,6 +182,14 @@ const CleanupSimulator = () => {
 
   const initialAccumulation = data[0]?.cumulativeNoCleanupMillionTons || 0;
 
+  const handleYearRangeChange = (values: number[]) => {
+    const [newStart, newEnd] = values;
+    if (newStart >= PRODUCTION_START_YEAR && newEnd <= MAX_PROJECTION_YEAR && newStart < newEnd) {
+      setStartYear(newStart);
+      setEndYear(newEnd);
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-4 bg-[#0d1117]">
       <SimulatorHeader 
@@ -204,6 +212,7 @@ const CleanupSimulator = () => {
         formatBudget={formatBudget}
         logBudgetToSlider={logBudgetToSlider}
         priceToLogSlider={priceToLogSlider}
+        onYearRangeChange={handleYearRangeChange}
       />
 
       <MetricsPanel
