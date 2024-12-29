@@ -1,10 +1,10 @@
 import { CLEANUP_START_YEAR } from '@/lib/constants';
 
 // Base growth rate without intervention
-const BASE_GROWTH_RATE = 0.0743;
+export const BASE_GROWTH_RATE = 0.0743;
 
 // Calculate how much the growth rate is reduced based on cleanup capacity
-const calculateAdjustedGrowthRate = (
+export const calculateAdjustedGrowthRate = (
   year: number,
   removalCapacity: number,
   baseGrowthRate: number = BASE_GROWTH_RATE

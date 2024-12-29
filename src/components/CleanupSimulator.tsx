@@ -10,6 +10,11 @@ import {
   type DataPoint 
 } from '@/lib/calculations';
 import { 
+  calculateWastePerDay,
+  calculateAdjustedGrowthRate,
+  BASE_GROWTH_RATE
+} from '@/lib/calculations/waste-calculations';
+import { 
   PRODUCTION_START_YEAR, 
   CLEANUP_START_YEAR, 
   MAX_PROJECTION_YEAR,
@@ -32,19 +37,6 @@ const CleanupSimulator = () => {
   const [zeroYear, setZeroYear] = useState<number | null>(null);
   
   const { exchangeRate, isLoadingRate } = useExchangeRate();
-
-  // Calculate daily waste production based on historical growth patterns
-  const calculateWastePerDay = (year: number, removalCapacity: number = 0): number => {
-    const baseProduction = 2; // Million metric tons in 1950
-    const growthRate = 0.0743; // Historical growth rate
-    const wasteRate = 0.02 + (year - 1950) * 0.0001; // Increasing waste rate
-    
-    // Use adjusted growth rate based on cleanup capacity
-    const adjustedGrowthRate = calculateAdjustedGrowthRate(year, removalCapacity);
-    
-    const totalProduction = baseProduction * Math.exp(adjustedGrowthRate * (year - 1950));
-    return (totalProduction * wasteRate * 1000000) / 365;
-  };
 
   // Calculate accumulated waste up to a given year
   const calculateHistoricalAccumulation = (upToYear: number): number => {
