@@ -456,7 +456,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
         </CardContent>
       </Card>
 
-      <Card className="bg-[#1a1f2d] shadow-md">
+      <Card className="bg-[#1a1f2d] shadow-md rounded-none">
         <CardContent className="p-0">
           <div className="h-[600px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -464,8 +464,8 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 data={data}
                 margin={{
                   top: 20,
-                  right: 90,
-                  left: 90,
+                  right: 30,
+                  left: 30,
                   bottom: 40
                 }}
               >
@@ -482,12 +482,14 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 <YAxis 
                   yAxisId="left"
                   label={{ 
-                    value: 'Daily Plastic Flow (Metric Tons/Day)', 
+                    value: 'Daily Plastic Flow (Thousands of Metric Tons/Day)', 
                     angle: -90, 
-                    position: 'insideLeft',
-                    offset: -15,
+                    position: 'outside',
+                    offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
+                  tickMargin={8}
+                  tickFormatter={(value) => (value / 1000).toFixed(0)}
                 />
                 <YAxis 
                   yAxisId="right"
@@ -495,19 +497,23 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   label={{ 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
-                    position: 'insideRight',
-                    offset: -15,
+                    position: 'outside',
+                    offset: 0,
                     style: { fill: '#9CA3AF' }
                   }}
+                  tickMargin={8}
                 />
                 <Tooltip 
-                  formatter={(value, name) => {
+                  formatter={(value: number, name) => {
                     switch(name) {
                       case "Original Total":
                       case "New Total":
                         return `${value.toLocaleString()} million tons`;
-                      default:
+                      case "Original Inflow":
+                      case "Net Inflow with Cleanup":
                         return `${value.toLocaleString()} tons/day`;
+                      default:
+                        return value.toLocaleString();
                     }
                   }}
                   contentStyle={{
