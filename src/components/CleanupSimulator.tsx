@@ -19,7 +19,11 @@ import {
   CLEANUP_START_YEAR, 
   MAX_PROJECTION_YEAR,
   DEFAULT_COST_PER_KG_EUR,
-  DEFAULT_EXCHANGE_RATE
+  DEFAULT_EXCHANGE_RATE,
+  TEAM_SEAS_START,
+  TEAM_SEAS_END,
+  TEAM_SEAS_TOTAL_TONS,
+  TEAM_SEAS_DAILY_RATE
 } from '@/lib/constants';
 
 import { SimulatorHeader } from './simulator/SimulatorHeader';
@@ -74,10 +78,16 @@ const CleanupSimulator = () => {
     
     // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
-      // Calculate original waste WITHOUT removal capacity influence
-      const wastePerDay = calculateWastePerDay(year, 0); // Pass 0 instead of removalCapacity
-      const removalPerDay = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
-      const netDailyChange = wastePerDay - removalPerDay;
+      const wastePerDay = calculateWastePerDay(year, 0);
+      
+      // Calculate total removal including Team Seas
+      const teamSeasRemoval = (year >= TEAM_SEAS_START && year <= TEAM_SEAS_END) 
+        ? TEAM_SEAS_DAILY_RATE 
+        : 0;
+      const simulatedRemoval = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
+      const totalRemovalPerDay = teamSeasRemoval + simulatedRemoval;
+      
+      const netDailyChange = wastePerDay - totalRemovalPerDay;
       
       // Calculate yearly accumulation using trapezoidal integration
       const yearlyAmount = ((netDailyChange + previousNetChange) / 2) * 365;
