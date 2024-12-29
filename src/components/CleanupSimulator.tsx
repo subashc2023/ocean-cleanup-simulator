@@ -26,6 +26,8 @@ const CleanupSimulator = () => {
   const [endYear, setEndYear] = useState(2035);
   const [data, setData] = useState<DataPoint[]>([]);
   const [zeroYear, setZeroYear] = useState<number | null>(null);
+  const [exchangeRate, setExchangeRate] = useState(0.93);
+  const [isLoadingRate, setIsLoadingRate] = useState(true);
   
   // Constants
   const PRODUCTION_START_YEAR = 1950;
@@ -139,6 +141,53 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
     setZeroYear(calculateZeroYear(results[results.length - 1]));
   }, [annualBudget, costPerKg, startYear, endYear]);
 
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await response.json();
+        setExchangeRate(data.rates.EUR);
+        setIsLoadingRate(false);
+      } catch (error) {
+        console.error('Failed to fetch exchange rate:', error);
+        setIsLoadingRate(false);
+        // Fallback to default rate if API fails
+        setExchangeRate(0.93);
+      }
+    };
+
+    fetchExchangeRate();
+  }, []); // Empty dependency array means this runs once on mount
+
+  const logSliderToPrice = (value: number): number => {
+    // Convert slider value (0-100) to price ($0.1-$100)
+    // Using exponential function to create non-linear scale
+    const minPrice = 0.1;
+    const maxPrice = 100;
+    const minLog = Math.log(minPrice);
+    const maxLog = Math.log(maxPrice);
+    const scale = (maxLog - minLog) / 100;
+    
+    return Math.exp(minLog + scale * value);
+  };
+
+  const priceToLogSlider = (price: number): number => {
+    // Convert price back to slider value
+    const minPrice = 0.1;
+    const maxPrice = 100;
+    const minLog = Math.log(minPrice);
+    const maxLog = Math.log(maxPrice);
+    const scale = (maxLog - minLog) / 100;
+    
+    return (Math.log(price) - minLog) / scale;
+  };
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    const price = logSliderToPrice(value);
+    setCostPerKg(Number(price.toFixed(2)));
+  };
+
   const formatBudget = (value: number): string => {
     return value >= 1000000000 
       ? `$${(value / 1000000000).toFixed(1)}B`
@@ -203,17 +252,29 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cost per Kilogram ($)
+                <label className="block text-sm font-medium text-gray-200 mb-2">
+                  Cost per Kilogram: ${costPerKg.toFixed(2)} 
+                  {isLoadingRate ? (
+                    <span className="text-gray-400 text-xs ml-1">Loading EUR rate...</span>
+                  ) : (
+                    <span>(€{(costPerKg * exchangeRate).toFixed(2)})</span>
+                  )}
                 </label>
-                <Input
-                  type="number"
-                  min="0.1"
-                  step="0.1"
-                  value={costPerKg}
-                  onChange={handleCostChange}
-                  className="w-full"
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={priceToLogSlider(costPerKg)}
+                  onChange={handleSliderChange}
+                  className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <div className="mt-1 text-xs text-gray-400 flex justify-between">
+                  <span>$0.10/kg</span>
+                  <span>$1/kg</span>
+                  <span>$10/kg</span>
+                  <span>$100/kg</span>
+                </div>
               </div>
             </div>
 
@@ -367,7 +428,13 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
           <li>Plastic production and waste tracking starts from {PRODUCTION_START_YEAR}</li>
           <li>Graph shows data from {startYear} to {endYear}</li>
           <li>Cleanup efforts begin in {CLEANUP_START_YEAR}</li>
-          <li>Current cost per metric ton: ${(costPerKg * 1000).toLocaleString()}</li>
+          <li>Current cost per metric ton: ${(costPerKg * 1000).toLocaleString()} / 
+            {isLoadingRate ? (
+              <span className="text-gray-400">Loading EUR...</span>
+            ) : (
+              `€${(costPerKg * 1000 * exchangeRate).toLocaleString()}`
+            )}
+          </li>
           <li>Pre-{startYear} accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
         </ul>
