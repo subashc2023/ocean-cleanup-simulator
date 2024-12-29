@@ -33,6 +33,8 @@ body {
 
 .recharts-surface {
   background-color: #1a1f2d !important;
+  overflow: visible;
+  padding: 1rem;
 }
 
 input[type="number"],
@@ -51,4 +53,17 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Improve axis label visibility */
+.recharts-label {
+  fill: #9CA3AF !important;
+  font-size: 0.875rem;
+}
+
+/* Add media queries for responsive text sizing */
+@media (max-width: 768px) {
+  .recharts-label {
+    font-size: 0.75rem;
+  }
 }
