@@ -74,7 +74,8 @@ const CleanupSimulator = () => {
     
     // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
-      const wastePerDay = calculateWastePerDay(year, removalCapacity);
+      // Calculate original waste WITHOUT removal capacity influence
+      const wastePerDay = calculateWastePerDay(year, 0); // Pass 0 instead of removalCapacity
       const removalPerDay = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
       const netDailyChange = wastePerDay - removalPerDay;
       
