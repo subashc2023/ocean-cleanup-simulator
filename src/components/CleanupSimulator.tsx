@@ -456,17 +456,17 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
         </CardContent>
       </Card>
 
-      <Card className="bg-white shadow-md">
+      <Card className="bg-[#1a1f2d] shadow-md">
         <CardContent className="p-6">
-          <div className="h-[500px] px-4">
+          <div className="h-[600px] p-8">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={data}
                 margin={{
-                  top: 30,
-                  right: 100,
-                  left: 100,
-                  bottom: 50
+                  top: 40,
+                  right: 120,
+                  left: 120,
+                  bottom: 60
                 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -475,7 +475,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   label={{ 
                     value: 'Year', 
                     position: 'bottom', 
-                    offset: -20,
+                    offset: -25,
                     fill: '#9CA3AF'
                   }}
                 />
@@ -485,7 +485,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Daily Plastic Flow (Metric Tons/Day)', 
                     angle: -90, 
                     position: 'insideLeft',
-                    offset: -70,
+                    offset: -80,
                     style: { fill: '#9CA3AF' }
                   }}
                 />
@@ -496,7 +496,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                     value: 'Total Accumulated Plastic (Million Tons)', 
                     angle: 90, 
                     position: 'insideRight',
-                    offset: -70,
+                    offset: -80,
                     style: { fill: '#9CA3AF' }
                   }}
                 />
@@ -510,14 +510,19 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                         return `${value.toLocaleString()} tons/day`;
                     }
                   }}
+                  contentStyle={{
+                    backgroundColor: '#1a1f2d',
+                    border: '1px solid #374151',
+                    color: '#9CA3AF'
+                  }}
                 />
                 <Legend 
                   verticalAlign="bottom" 
-                  height={36}
+                  height={50}
                   wrapperStyle={{
-                    paddingTop: '20px',
-                    paddingBottom: '20px',
-                    marginBottom: '-10px'
+                    paddingTop: '25px',
+                    paddingBottom: '25px',
+                    marginBottom: '-15px'
                   }}
                 />
                 <Line 
