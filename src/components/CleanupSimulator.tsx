@@ -28,7 +28,6 @@ const CleanupSimulator = () => {
   const [zeroYear, setZeroYear] = useState<number | null>(null);
   const [exchangeRate, setExchangeRate] = useState(0.93);
   const [isLoadingRate, setIsLoadingRate] = useState(true);
-  const [totalSpent, setTotalSpent] = useState(0);
   
   // Constants
   const PRODUCTION_START_YEAR = 1950;
@@ -108,7 +107,6 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
     const historicalAccumulation = calculateHistoricalAccumulation(startYear);
     let cumulativeTotal = historicalAccumulation;
     let cumulativeTotalNoCleanup = historicalAccumulation;
-    let totalSpentSoFar = 0;
     
     const costPerTon = costPerKg * 1000;
     const removalCapacity = (annualBudget / costPerTon) / 365;
@@ -129,10 +127,6 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
         cumulativeTotalNoCleanup += yearlyAmountNoCleanup;
       }
       
-      if (year >= CLEANUP_START_YEAR) {
-        totalSpentSoFar += removalPerDay * costPerKg * 365;
-      }
-      
       results.push({
         year,
         originalWastePerDay: Math.round(wastePerDay),
@@ -143,23 +137,62 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
       });
     }
     
-    setTotalSpent(totalSpentSoFar);
     setData(results);
     setZeroYear(calculateZeroYear(results[results.length - 1]));
   }, [annualBudget, costPerKg, startYear, endYear]);
 
+  interface CachedRate {
+    rate: number;
+    timestamp: number;
+  }
+
+  const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  const getCachedExchangeRate = (): CachedRate | null => {
+    const cached = localStorage.getItem('exchangeRate');
+    if (!cached) return null;
+    
+    try {
+      return JSON.parse(cached) as CachedRate;
+    } catch {
+      return null;
+    }
+  };
+
+  const setCachedExchangeRate = (rate: number) => {
+    const cacheData: CachedRate = {
+      rate,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('exchangeRate', JSON.stringify(cacheData));
+  };
+
   useEffect(() => {
     const fetchExchangeRate = async () => {
+      // Check cache first
+      const cached = getCachedExchangeRate();
+      if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+        setExchangeRate(cached.rate);
+        setIsLoadingRate(false);
+        return;
+      }
+
       try {
         const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
         const data = await response.json();
-        setExchangeRate(data.rates.EUR);
+        const newRate = data.rates.EUR;
+        setExchangeRate(newRate);
+        setCachedExchangeRate(newRate);
         setIsLoadingRate(false);
       } catch (error) {
         console.error('Failed to fetch exchange rate:', error);
+        // If we have a cached rate, use it even if expired
+        if (cached) {
+          setExchangeRate(cached.rate);
+        } else {
+          setExchangeRate(0.93); // Fallback default rate
+        }
         setIsLoadingRate(false);
-        // Fallback to default rate if API fails
-        setExchangeRate(0.93);
       }
     };
 
@@ -319,24 +352,19 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 <div className="font-medium text-gray-200">Pre-{startYear} Accumulation</div>
                 <div className="mt-1 text-gray-300">{Math.round(initialAccumulation).toLocaleString()} M tons</div>
               </div>
-              <div className="p-4 bg-gray-900 rounded-lg">
-                <div className="font-medium text-gray-200">Daily Removal Capacity</div>
-                <div className="mt-1 text-gray-300">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="font-medium text-gray-900">Daily Removal Capacity</div>
+                <div className="mt-1 text-gray-700">
                   {Math.round(annualBudget / (costPerKg * 1000) / 365).toLocaleString()} tons/day
                 </div>
               </div>
-              <div className="p-4 bg-gray-900 rounded-lg">
-                <div className="font-medium text-gray-200">Total Spent by {endYear}</div>
-                <div className="mt-1 text-gray-300">
-                  ${Math.round(totalSpent).toLocaleString()}
-                  {!isLoadingRate && <span className="text-gray-400 text-xs ml-1">
-                    (€{Math.round(totalSpent * exchangeRate).toLocaleString()})
-                  </span>}
-                </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="font-medium text-gray-900">Projected Reduction by {endYear}</div>
+                <div className="mt-1 text-gray-700">{reductionPercent}%</div>
               </div>
-              <div className="p-4 bg-gray-900 rounded-lg">
-                <div className="font-medium text-gray-200">Zero Total Waste Year</div>
-                <div className="mt-1 text-gray-300">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="font-medium text-gray-900">Zero Total Waste Year</div>
+                <div className="mt-1 text-gray-700">
                   {zeroYear ? zeroYear : 'Not reached by 2200'}
                 </div>
               </div>
@@ -434,8 +462,8 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
         </CardContent>
       </Card>
 
-      <div className="text-sm text-gray-300 space-y-2">
-        <h3 className="font-medium text-gray-200">Notes & Assumptions:</h3>
+      <div className="text-sm text-gray-600 space-y-2">
+        <h3 className="font-medium text-gray-900">Notes & Assumptions:</h3>
         <ul className="list-disc pl-5 space-y-1">
           <li>Plastic production and waste tracking starts from {PRODUCTION_START_YEAR}</li>
           <li>Graph shows data from {startYear} to {endYear}</li>
