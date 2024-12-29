@@ -1,6 +1,6 @@
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-  ResponsiveContainer, ReferenceLine 
+  ResponsiveContainer 
 } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
@@ -32,6 +32,12 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const leftAxisMax = Math.ceil(maxDailyFlow * 1.1 / 1000) * 1000;
   const rightAxisMax = Math.ceil(leftAxisMax * 365 / 1000000);
 
+  // Create Team Seas overlay data
+  const teamSeasData = data.map(d => ({
+    ...d,
+    teamSeasLine: d.year >= TEAM_SEAS_START && d.year <= TEAM_SEAS_END ? leftAxisMax * 0.9 : null
+  }));
+
   return (
     <div className="relative">
       {/* Left Y-axis label */}
@@ -55,7 +61,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
           <div className="h-[600px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={data}
+                data={teamSeasData}
                 margin={{ top: 20, right: 40, left: 40, bottom: 40 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -80,36 +86,18 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   domain={[0, rightAxisMax]}
                   tickMargin={8}
                 />
-                
-                {/* Start marker */}
-                <ReferenceLine
-                  x={TEAM_SEAS_START}
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  strokeDasharray="3 3"
-                  label={{
-                    position: 'top',
-                    value: 'Team Seas',
-                    fill: '#10B981',
-                    fontSize: 12
-                  }}
-                />
 
-                {/* End marker */}
-                <ReferenceLine
-                  x={TEAM_SEAS_END}
+                {/* Team Seas indicator line */}
+                <Line
+                  yAxisId="left"
+                  type="step"
+                  dataKey="teamSeasLine"
                   stroke="#10B981"
                   strokeWidth={2}
                   strokeDasharray="3 3"
-                />
-
-                {/* Horizontal reference line */}
-                <ReferenceLine
-                  y={leftAxisMax * 0.9}
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  strokeDasharray="3 3"
-                  isFront={true}
+                  dot={false}
+                  activeDot={false}
+                  name="Team Seas"
                   label={<TeamSeasTooltip />}
                 />
 
