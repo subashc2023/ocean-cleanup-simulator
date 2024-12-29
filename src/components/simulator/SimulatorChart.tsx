@@ -1,19 +1,12 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
-import { DataPoint } from '@/lib/calculations';
-
-interface SimulatorChartProps {
-  data: DataPoint[];
-}
+import { chartConfig } from './chart-config';
+import type { SimulatorChartProps } from './types';
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
-  // Calculate the domains based on data
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
-  const maxTotal = Math.max(...data.map(d => d.cumulativeNoCleanupMillionTons));
-  
-  // Set up domains with a fixed ratio (approximately 365:1 for annual accumulation)
-  const leftAxisMax = Math.ceil(maxDailyFlow * 1.1 / 1000) * 1000; // Round to nearest thousand
-  const rightAxisMax = Math.ceil(leftAxisMax * 365 / 1000000); // Convert to million tons
+  const leftAxisMax = Math.ceil(maxDailyFlow * 1.1 / 1000) * 1000;
+  const rightAxisMax = Math.ceil(leftAxisMax * 365 / 1000000);
 
   return (
     <Card className="bg-[#1a1f2d] shadow-md rounded-none border border-gray-700">
@@ -22,12 +15,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={data}
-              margin={{
-                top: 20,
-                right: 90,
-                left: 90,
-                bottom: 40
-              }}
+              margin={{ top: 20, right: 90, left: 90, bottom: 40 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
               <XAxis 
@@ -65,18 +53,11 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                 }}
                 tickMargin={8}
               />
+              
               <Tooltip 
-                formatter={(value: number, name) => {
-                  switch(name) {
-                    case "Original Total":
-                    case "New Total":
-                      return `${value.toLocaleString()} million tons`;
-                    case "Original Inflow":
-                    case "Net Inflow with Cleanup":
-                      return `${value.toLocaleString()} tons/day`;
-                    default:
-                      return value.toLocaleString();
-                  }
+                formatter={(value: number, name: string) => {
+                  const formatter = chartConfig.tooltipFormatters[name as keyof typeof chartConfig.tooltipFormatters];
+                  return formatter ? formatter(value) : value.toLocaleString();
                 }}
                 contentStyle={{
                   backgroundColor: '#1a1f2d',
@@ -84,6 +65,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   color: '#9CA3AF'
                 }}
               />
+              
               <Legend 
                 verticalAlign="bottom" 
                 height={36}
@@ -93,40 +75,10 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   marginBottom: '-5px'
                 }}
               />
-              <Line 
-                yAxisId="left"
-                type="monotone" 
-                dataKey="dailyInflow" 
-                name="Original Inflow"
-                stroke="#dc2626" 
-                strokeWidth={2}
-              />
-              <Line 
-                yAxisId="left"
-                type="monotone" 
-                dataKey="netInflow" 
-                name="Net Inflow with Cleanup"
-                stroke="#ea580c" 
-                strokeWidth={2}
-                strokeDasharray="5 5"
-              />
-              <Line 
-                yAxisId="right"
-                type="monotone" 
-                dataKey="cumulativeNoCleanupMillionTons" 
-                name="Original Total"
-                stroke="#2563eb" 
-                strokeWidth={2}
-              />
-              <Line 
-                yAxisId="right"
-                type="monotone" 
-                dataKey="cumulativeMillionTons" 
-                name="New Total"
-                stroke="#16a34a" 
-                strokeWidth={2}
-                strokeDasharray="5 5"
-              />
+              
+              {chartConfig.lines.map(line => (
+                <Line key={line.id} {...line} type="monotone" />
+              ))}
             </LineChart>
           </ResponsiveContainer>
         </div>
