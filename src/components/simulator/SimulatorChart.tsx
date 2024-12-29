@@ -115,7 +115,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
             ]}
             tooltip={({ point }) => {
               const value = point.data.y as number;
-              const name = point.serieId;
+              const name = point.serieId as string;
               return (
                 <div className="bg-[#1a1f2d] border border-gray-700 p-2">
                   <strong>{name}:</strong>{' '}
