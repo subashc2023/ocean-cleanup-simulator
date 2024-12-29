@@ -12,20 +12,42 @@ import {
   TEAM_SEAS_DAILY_RATE 
 } from '@/lib/constants';
 
-// Custom tooltip component for Team Seas line
-const TeamSeasTooltip = () => (
-  <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
-    <h3 className="font-medium text-white mb-2">Team Seas</h3>
-    <div className="space-y-1 text-sm text-gray-300">
-      <p>MrBeast and Mark Rober</p>
-      <p>$33.79 Million Raised</p>
-      <p>{(TEAM_SEAS_TOTAL_TONS * 2204.62).toLocaleString()} lbs of trash</p>
-      <p>{(TEAM_SEAS_TOTAL_TONS * 1000).toLocaleString()} KG</p>
-      <p>{TEAM_SEAS_TOTAL_TONS.toLocaleString()} Tons over {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
-      <p>{TEAM_SEAS_DAILY_RATE.toFixed(3)} tons per day</p>
+// Custom tooltip that shows both regular data and Team Seas info
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload) return null;
+
+  return (
+    <div className="flex gap-4">
+      {/* Regular data tooltip */}
+      <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
+        <h3 className="font-medium text-white mb-2">{label}</h3>
+        <div className="space-y-1 text-sm text-gray-300">
+          {payload.map((entry: any) => (
+            <p key={entry.name}>
+              {entry.name}: {
+                chartConfig.tooltipFormatters[entry.name]?.(entry.value) 
+                ?? entry.value.toLocaleString()
+              }
+            </p>
+          ))}
+        </div>
+      </div>
+
+      {/* Team Seas stats */}
+      <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
+        <h3 className="font-medium text-white mb-2">Team Seas</h3>
+        <div className="space-y-1 text-sm text-gray-300">
+          <p>MrBeast and Mark Rober</p>
+          <p>$33.79 Million</p>
+          <p>{(TEAM_SEAS_TOTAL_TONS * 2204.62).toLocaleString()} lbs of trash</p>
+          <p>{(TEAM_SEAS_TOTAL_TONS * 1000).toLocaleString()} KG</p>
+          <p>{TEAM_SEAS_TOTAL_TONS.toLocaleString()} Tons over {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
+          <p>{TEAM_SEAS_DAILY_RATE.toFixed(3)} tons per day</p>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
@@ -98,18 +120,14 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   dot={false}
                   activeDot={false}
                   name="Team Seas"
-                  label={<TeamSeasTooltip />}
+                  label={<CustomTooltip />}
                 />
 
                 <Tooltip 
-                  formatter={(value: number, name: string) => {
-                    const formatter = chartConfig.tooltipFormatters[name as keyof typeof chartConfig.tooltipFormatters];
-                    return formatter ? formatter(value) : value.toLocaleString();
-                  }}
+                  content={<CustomTooltip />}
                   contentStyle={{
-                    backgroundColor: '#1a1f2d',
-                    border: '1px solid #374151',
-                    color: '#9CA3AF'
+                    backgroundColor: 'transparent',
+                    border: 'none'
                   }}
                 />
                 
