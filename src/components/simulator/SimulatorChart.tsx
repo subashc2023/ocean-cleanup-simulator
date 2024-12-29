@@ -1,7 +1,26 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
+  ResponsiveContainer, ReferenceLine 
+} from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
 import type { ChartLine, SimulatorChartProps } from './types';
+import { TEAM_SEAS_START, TEAM_SEAS_END, TEAM_SEAS_TOTAL_TONS, TEAM_SEAS_DAILY_RATE } from '@/lib/constants';
+
+const TeamSeasTooltip = () => (
+  <div className="bg-gray-800 border border-gray-700 p-3 rounded-md shadow-lg">
+    <h3 className="font-medium text-white mb-2">Team Seas</h3>
+    <div className="space-y-1 text-sm text-gray-300">
+      <p>MrBeast and Mark Rober</p>
+      <p>Total Removed: {TEAM_SEAS_TOTAL_TONS.toLocaleString()} tons</p>
+      <p>Duration: {Math.round((TEAM_SEAS_END - TEAM_SEAS_START) * 365)} days</p>
+      <p>Daily Rate: {TEAM_SEAS_DAILY_RATE.toFixed(3)} tons/day</p>
+      <p>Pounds: {Math.round(TEAM_SEAS_TOTAL_TONS * 2204.62).toLocaleString()} lbs</p>
+      <p>Kilograms: {Math.round(TEAM_SEAS_TOTAL_TONS * 1000).toLocaleString()} kg</p>
+      <p>Cost: ${(33.79).toFixed(2)}M</p>
+    </div>
+  </div>
+);
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
@@ -57,6 +76,38 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   tickMargin={8}
                 />
                 
+                {/* Team Seas Reference Line */}
+                <ReferenceLine
+                  x={TEAM_SEAS_START}
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  strokeDasharray="3 3"
+                  label={{
+                    position: 'top',
+                    value: 'Team Seas',
+                    fill: '#10B981',
+                    fontSize: 12
+                  }}
+                />
+                <ReferenceLine
+                  x={TEAM_SEAS_END}
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  strokeDasharray="3 3"
+                />
+                
+                {/* Horizontal reference line for Team Seas period */}
+                <ReferenceLine
+                  y={TEAM_SEAS_DAILY_RATE}
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  segment={[
+                    { x: TEAM_SEAS_START },
+                    { x: TEAM_SEAS_END }
+                  ]}
+                  label={<TeamSeasTooltip />}
+                />
+
                 <Tooltip 
                   formatter={(value: number, name: string) => {
                     const formatter = chartConfig.tooltipFormatters[name as keyof typeof chartConfig.tooltipFormatters];
