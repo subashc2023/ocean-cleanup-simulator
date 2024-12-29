@@ -30,6 +30,9 @@ const CleanupSimulator = () => {
   const [endYear, setEndYear] = useState(2035);
   const [data, setData] = useState<DataPoint[]>([]);
   const [zeroYear, setZeroYear] = useState<number | null>(null);
+  const [cleanupStrategy, setCleanupStrategy] = useState<'ocean' | 'river' | 'hybrid'>('hybrid');
+  const [installedCapacity, setInstalledCapacity] = useState(0);
+  const [riverInterceptions, setRiverInterceptions] = useState<RiverEffect[]>([]);
   
   const { exchangeRate, isLoadingRate } = useExchangeRate();
 
@@ -59,6 +62,10 @@ const CleanupSimulator = () => {
   useEffect(() => {
     const results: DataPoint[] = [];
     
+    // Track installed capacity for learning curve
+    let currentCapacity = 0;
+    let currentRiverInterceptions: RiverEffect[] = [];
+    
     // Ensure valid year range
     if (startYear >= endYear) {
       return;
@@ -79,9 +86,36 @@ const CleanupSimulator = () => {
     
     // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
-      const wastePerDay = calculateWastePerDay(year);
-      const removalPerDay = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
-      const netDailyChange = wastePerDay - removalPerDay;
+      const { oceanCost, riverCost } = calculateCleanupCost(
+        year, 
+        DEFAULT_OCEAN_COST, 
+        DEFAULT_RIVER_COST, 
+        currentCapacity
+      );
+
+      // Allocate budget between ocean and river cleanup
+      const riverBudget = cleanupStrategy === 'ocean' ? 0 : 
+        cleanupStrategy === 'river' ? annualBudget : 
+        annualBudget * 0.7; // 70% to rivers in hybrid strategy
+      
+      const oceanBudget = annualBudget - riverBudget;
+
+      // Calculate new river interceptions
+      if (riverBudget > 0 && year >= CLEANUP_START_YEAR) {
+        const newRiverCapacity = riverBudget / riverCost;
+        currentCapacity += newRiverCapacity;
+        
+        currentRiverInterceptions.push({
+          yearInstalled: year,
+          flowReduction: newRiverCapacity / 365,
+          installationCost: riverBudget
+        });
+      }
+
+      const wastePerDay = calculateWastePerDay(year, currentRiverInterceptions);
+      const oceanRemovalPerDay = oceanBudget / (oceanCost * 365);
+      
+      const netDailyChange = wastePerDay - oceanRemovalPerDay;
       
       // Calculate yearly accumulation using trapezoidal integration
       const yearlyAmount = ((netDailyChange + previousNetChange) / 2) * 365;
@@ -104,7 +138,7 @@ const CleanupSimulator = () => {
     
     setData(results);
     setZeroYear(calculateZeroYear(results, costPerKg, annualBudget, MAX_PROJECTION_YEAR));
-  }, [annualBudget, costPerKg, startYear, endYear]);
+  }, [annualBudget, costPerKg, startYear, endYear, cleanupStrategy]);
 
   // Input handlers
   const handleBudgetTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
