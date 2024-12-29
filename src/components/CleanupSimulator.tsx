@@ -292,12 +292,22 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                 />
                 <YAxis 
                   yAxisId="left"
-                  label={{ value: 'Daily Change (Metric Tons)', angle: -90, position: 'insideLeft' }}
+                  label={{ 
+                    value: 'Daily Change (Metric Tons)', 
+                    angle: -90, 
+                    position: 'insideLeft',
+                    offset: -40
+                  }}
                 />
                 <YAxis 
                   yAxisId="right"
                   orientation="right"
-                  label={{ value: 'Total Accumulation (Million Tons)', angle: 90, position: 'insideRight' }}
+                  label={{ 
+                    value: 'Total Accumulation (Million Tons)', 
+                    angle: 90, 
+                    position: 'insideRight',
+                    offset: -40
+                  }}
                 />
                 <Tooltip 
                   formatter={(value, name) => {
