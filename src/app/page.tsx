@@ -2,7 +2,9 @@ import CleanupSimulator from '../components/CleanupSimulator';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0d1117]">
+    <main className="relative min-h-screen">
+      <div className="ocean-ripple" />
+      <div className="ocean-particles" />
       <CleanupSimulator/>
     </main>
   );

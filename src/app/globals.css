@@ -8,39 +8,410 @@
   margin: 0;
 }
 
+@keyframes wave {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(20px) translateX(12px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateY(0) translateX(24px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-20px) translateX(12px) rotate(-1.5deg);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+}
+
+@keyframes slowWave {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) translateX(-15px) scale(1.08);
+  }
+  100% {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(8px) translateX(12px) rotate(1.2deg);
+  }
+  66% {
+    transform: translateY(-5px) translateX(18px) rotate(-1.2deg);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+}
+
+@keyframes particleFlow {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(12px) translateX(18px) rotate(1deg) scale(0.98);
+  }
+  50% {
+    transform: translateY(-8px) translateX(32px) rotate(-0.5deg) scale(1.02);
+  }
+  75% {
+    transform: translateY(-15px) translateX(14px) rotate(-1.2deg) scale(0.97);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes particleSwirl {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(15px) translateX(-12px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(-10px) translateX(24px) rotate(-1.5deg);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+}
+
 :root,
 html,
 body {
-  background-color: #0d1117;
   color: white;
   margin: 0;
   padding: 0;
   min-height: 100vh;
   width: 100%;
+  background: linear-gradient(
+    180deg,
+    #0088cc 0%,    /* Bright ocean surface */
+    #006da3 15%,   /* Upper ocean */
+    #005580 35%,   /* Mid ocean */
+    #004466 55%,   /* Lower mid */
+    #003347 75%,   /* Deep ocean */
+    #002233 100%   /* Ocean floor */
+  );
 }
 
 #__next {
-  background-color: #0d1117;
   min-height: 100vh;
+  position: relative;
+  background: 
+    /* Surface light */
+    radial-gradient(
+      circle at 50% -20%,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 60%
+    ),
+    /* Deep gradient */
+    linear-gradient(
+      0deg,
+      rgba(0, 17, 26, 0.4) 0%,
+      transparent 100%
+    );
+}
+
+/* Ocean waves */
+.ocean-ripple {
+  position: fixed;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background: 
+    /* Surface shimmer */
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 255, 255, 0.03) 0%,
+      transparent 70%
+    ),
+    /* Wave Layer 1 - Varied sizes */
+    radial-gradient(
+      2.2px 1.8px at 143px 273px,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      3.1px 2.7px at 327px 152px,
+      rgba(255, 255, 255, 0.18) 0%,
+      transparent 100%
+    ),
+    /* Wave Layer 2 - Soft waves */
+    radial-gradient(
+      4px 3px at 530px 380px,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      3px 4px at 260px 480px,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 100%
+    ),
+    /* Wave Layer 3 - Different pattern */
+    radial-gradient(
+      2.4px 1.7px at 491px 342px,
+      rgba(255, 255, 255, 0.13) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1.8px 2.1px at 631px 283px,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 100%
+    ),
+    /* Deep wave patterns */
+    radial-gradient(
+      5px 4px at 423px 567px,
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      4px 5px at 789px 345px,
+      rgba(255, 255, 255, 0.06) 0%,
+      transparent 100%
+    );
+  background-size: 
+    200% 200%,
+    751px 783px,
+    793px 761px,
+    971px 993px,
+    923px 947px,
+    807px 783px,
+    771px 789px,
+    1123px 1087px,
+    1087px 1157px;
+  transform: rotate(-1.2deg);
+  animation: wave 15.7s ease-in-out infinite;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Add water caustics and refraction */
+.ocean-ripple::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background: 
+    /* Caustics pattern 1 */
+    radial-gradient(
+      ellipse at 30% 40%,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 60% 70%,
+      rgba(255, 255, 255, 0.06) 0%,
+      transparent 45%
+    ),
+    /* Caustics pattern 2 */
+    radial-gradient(
+      ellipse at 70% 35%,
+      rgba(255, 255, 255, 0.07) 0%,
+      transparent 55%
+    ),
+    /* Soft refraction areas */
+    radial-gradient(
+      circle at 45% 60%,
+      rgba(0, 119, 179, 0.2) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 80% 40%,
+      rgba(0, 119, 179, 0.15) 0%,
+      transparent 65%
+    );
+  background-size: 120% 120%;
+  animation: slowWave 18.3s ease-in-out infinite;
+  opacity: 0.7;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+/* Add deeper refraction layer */
+.ocean-ripple::after {
+  content: '';
+  position: fixed;
+  top: -15%;
+  left: -15%;
+  right: -15%;
+  bottom: -15%;
+  background: 
+    /* Deep refraction patterns */
+    radial-gradient(
+      ellipse at 40% 60%,
+      rgba(0, 85, 128, 0.3) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse at 75% 45%,
+      rgba(0, 85, 128, 0.25) 0%,
+      transparent 75%
+    );
+  background-size: 150% 150%;
+  animation: slowWave 23.7s ease-in-out infinite reverse;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* Floating particles */
+.ocean-particles {
+  position: fixed;
+  top: -5%;
+  left: -5%;
+  right: -5%;
+  bottom: -5%;
+  background-image: 
+    /* Fast moving small particles */
+    radial-gradient(
+      0.8px 0.6px at 237px 351px,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      0.7px 0.9px at 541px 283px,
+      rgba(255, 255, 255, 0.09) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      0.9px 0.7px at 783px 471px,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 100%
+    ),
+    /* Medium particles with varied movement */
+    radial-gradient(
+      1.8px 1.5px at 449px 317px,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1.6px 1.9px at 679px 491px,
+      rgba(255, 255, 255, 0.11) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      2.1px 1.7px at 881px 273px,
+      rgba(255, 255, 255, 0.13) 0%,
+      transparent 100%
+    ),
+    /* Larger interacting particles */
+    radial-gradient(
+      2.8px 2.4px at 573px 397px,
+      rgba(255, 255, 255, 0.14) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      2.5px 2.9px at 837px 533px,
+      rgba(255, 255, 255, 0.13) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      3.1px 2.7px at 373px 627px,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 100%
+    );
+  background-size: 
+    /* Fast particle sizes */
+    883px 917px,
+    919px 887px,
+    897px 927px,
+    /* Medium particle sizes */
+    1013px 981px,
+    991px 1027px,
+    1031px 997px,
+    /* Large particle sizes */
+    1117px 1083px,
+    1093px 1121px,
+    1087px 1103px;
+  animation: particleFlow 19.7s ease-in-out infinite;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ocean-particles::after {
+  content: '';
+  position: fixed;
+  top: -8%;
+  left: -8%;
+  right: -8%;
+  bottom: -8%;
+  background-image: 
+    /* Additional interacting particles */
+    radial-gradient(
+      2.2px 1.9px at 463px 397px,
+      rgba(255, 255, 255, 0.11) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1.9px 2.3px at 757px 603px,
+      rgba(255, 255, 255, 0.09) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      2.4px 2.1px at 673px 371px,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      2.7px 2.3px at 891px 539px,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      2.1px 2.5px at 543px 749px,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    );
+  background-size: 
+    1123px 1091px,
+    1081px 1127px,
+    1097px 1117px,
+    1107px 1087px,
+    1093px 1103px;
+  animation: particleSwirl 23.3s ease-in-out infinite;
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 /* Graph container styles */
 .recharts-wrapper {
-  background-color: #1a1f2d !important;
+  background-color: rgba(0, 24, 36, 0.85) !important;
   border-radius: 0.75rem !important;
-  border: 1px solid #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
+  backdrop-filter: blur(5px);
 }
 
 .recharts-surface {
-  background-color: #1a1f2d !important;
+  background-color: transparent !important;
+}
+
+/* Card backgrounds */
+.bg-gray-800 {
+  background-color: rgba(0, 24, 36, 0.85) !important;
+  backdrop-filter: blur(5px);
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 input[type="number"],
 input[type="text"] {
-  background-color: #131720 !important;
+  background-color: rgba(0, 24, 36, 0.9) !important;
   color: rgb(229, 231, 235) !important;
-  border-color: rgb(55, 65, 81) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
   border-radius: 0.75rem !important;
 }
 
