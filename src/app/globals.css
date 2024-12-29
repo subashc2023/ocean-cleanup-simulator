@@ -576,6 +576,11 @@ input[type="number"]::-webkit-outer-spin-button {
   z-index: 10;
 }
 
+/* Adjust left axis label position */
+.absolute.-left-16 {
+  left: -4.5rem !important;  /* Increase from -4rem (-16) to -4.5rem (-18) */
+}
+
 /* Remove all mouse-related CSS */
 :root {
   --mouse-x: 0px;
