@@ -1,3 +1,8 @@
+import { 
+  PRODUCTION_START_YEAR, 
+  CLEANUP_START_YEAR 
+} from '@/lib/constants';
+
 interface NotesProps {
   startYear: number;
   endYear: number;
