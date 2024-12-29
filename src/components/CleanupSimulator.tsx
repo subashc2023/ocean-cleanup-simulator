@@ -582,7 +582,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
               <span className="text-gray-400">Loading EUR...</span>
             ) : (
               `€${(costPerKg * 1000 * exchangeRate).toLocaleString()}`
-            )}. The default value of 5.22 Euros/Ton is as per The Ocean Cleanup 2024
+            )}. The default value of 5,200 Euros/Ton is as per The Ocean Cleanup 2024
           </li>
           <li>Pre-{startYear} accumulation is included in total figures</li>
           <li>Projections assume constant growth rates and cleanup costs</li>
