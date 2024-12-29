@@ -178,18 +178,18 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-8">
       <div className="space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Plastic Waste Cleanup Simulator</h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <h1 className="text-3xl font-bold tracking-tight text-white">Plastic Waste Cleanup Simulator</h1>
+        <p className="text-gray-300">
           Explore scenarios for global plastic waste cleanup efforts based on different budget allocations and cost assumptions.
         </p>
       </div>
 
-      <Card className="bg-white dark:bg-gray-800 shadow-md">
+      <Card className="bg-gray-800 shadow-md">
         <CardContent className="p-6">
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Annual Cleanup Budget: {formatBudget(annualBudget)}
                 </label>
                 <input
@@ -199,7 +199,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   step="100000000"
                   value={annualBudget}
                   onChange={(e) => setAnnualBudget(Number(e.target.value))}
-                  className="w-full"
+                  className="w-full bg-gray-800 text-white border-gray-700 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -247,9 +247,9 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <div className="font-medium text-gray-900 dark:text-gray-100">Pre-{startYear} Accumulation</div>
-                <div className="mt-1 text-gray-700 dark:text-gray-300">{Math.round(initialAccumulation).toLocaleString()} M tons</div>
+              <div className="p-4 bg-gray-900 rounded-lg">
+                <div className="font-medium text-gray-200">Pre-{startYear} Accumulation</div>
+                <div className="mt-1 text-gray-300">{Math.round(initialAccumulation).toLocaleString()} M tons</div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="font-medium text-gray-900">Daily Removal Capacity</div>
@@ -285,7 +285,7 @@ const calculateZeroYear = (latestData: DataPoint | undefined): number | null => 
                   bottom: 5,
                 }}
               >
-                <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis 
                   dataKey="year" 
                   label={{ value: 'Year', position: 'bottom', offset: 0 }}
