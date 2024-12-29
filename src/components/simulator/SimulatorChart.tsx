@@ -1,7 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import { chartConfig } from './chart-config';
-import type { SimulatorChartProps } from './types';
+import type { ChartLine, SimulatorChartProps } from './types';
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => {
   const maxDailyFlow = Math.max(...data.map(d => d.dailyInflow));
@@ -79,7 +79,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                   }}
                 />
                 
-                {chartConfig.lines.map((line: ChartLine)=> (
+                {chartConfig.lines.map((line: ChartLine) => (
                   <Line key={line.id} {...line} type="monotone" />
                 ))}
               </LineChart>
