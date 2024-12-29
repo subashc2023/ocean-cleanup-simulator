@@ -7,7 +7,7 @@ interface SimulatorChartProps {
 }
 
 export const SimulatorChart = ({ data }: SimulatorChartProps) => (
-  <Card className="bg-[#1a1f2d] shadow-md rounded-none">
+  <Card className="bg-[#1a1f2d] shadow-md rounded-none border border-gray-700">
     <CardContent className="p-0">
       <div className="h-[600px]">
         <ResponsiveContainer width="100%" height="100%">

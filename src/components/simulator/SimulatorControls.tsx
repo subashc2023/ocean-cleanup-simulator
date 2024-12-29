@@ -35,7 +35,7 @@ export const SimulatorControls = ({
   logBudgetToSlider,
   priceToLogSlider
 }: SimulatorControlsProps) => (
-  <Card className="bg-gray-800 shadow-md">
+  <Card className="bg-gray-800 shadow-md rounded-none border border-gray-700">
     <CardContent className="p-6">
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
