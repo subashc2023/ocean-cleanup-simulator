@@ -22,8 +22,11 @@ body {
   min-height: 100vh;
 }
 
+/* Graph container styles */
 .recharts-wrapper {
   background-color: #1a1f2d !important;
+  border-radius: 0.5rem;
+  border: 1px solid #1f2937;
 }
 
 .recharts-surface {
