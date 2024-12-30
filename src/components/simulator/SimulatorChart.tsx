@@ -53,7 +53,7 @@ export const SimulatorChart = ({ data }: SimulatorChartProps) => {
                     offset: -10,
                     fill: '#9CA3AF'
                   }}
-                  tickFormatter={(value) => Math.round(value)}
+                  tickFormatter={(value) => Math.round(value).toString()}
                   allowDecimals={false}
                 />
                 <YAxis 
