@@ -17,7 +17,7 @@ export const NotesPanel = ({ startYear, endYear }: NotesPanelProps) => (
         <li>Economic benefits of cleanup or profits from selling recycled materials are not factored into costs</li>
         <li>Local infrastructure development costs not included</li>
         <li>Ocean cleanup is 10x more expensive than river interception by weight</li>
-        <li>90%+ of the marine plastic is in the ocean</li>
+        <li>90%+ of the marine plastic is already in the oceans</li>
       </ul>
     </CardContent>
   </Card>
