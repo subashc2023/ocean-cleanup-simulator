@@ -21,7 +21,7 @@ export const ConclusionsPanel = () => (
             <li>Distributed efforts are more realistic, but less effective</li>
             <li>At current costs, it will take $70B a year to handle almost every single source of plastic to the oceans</li>
             <li>At current costs, it will take $50B One Time to clean every single major garbage patch</li>
-            <li>At current costs, it will take $1.5-3 Trillion to clean every single piece of plastic in the ocean</li>
+            <li>At current costs, it will take $1.5-3 Trillion to clean every single piece of accessible plastic in the ocean</li>
           </ul>
         </div>
       </div>
