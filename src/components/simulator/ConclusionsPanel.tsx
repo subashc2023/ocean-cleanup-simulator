@@ -9,7 +9,6 @@ export const ConclusionsPanel = () => (
           <h4 className="text-white font-medium mb-2">Strategic Insights:</h4>
           <ul className="list-disc pl-5 space-y-1">
             <li>A Penny of Prevention is worth a Pound of Cure</li>
-            <li>Ocean Cleanup is 10x more expensive than River Interception by weight</li>
             <li>Top 3 countries account for 55% of river plastic output</li>
             <li>Regional cooperation could dramatically improve efficiency, but is unlikely, and so the simulation assumes uniform global distribution of effort</li>
           </ul>

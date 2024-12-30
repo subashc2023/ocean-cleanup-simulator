@@ -11,12 +11,18 @@ export const calculateAdjustedGrowthRate = (
 ): number => {
   if (year < CLEANUP_START_YEAR) return baseGrowthRate;
   
-  // Each X tons/day of removal capacity reduces growth rate by Y%
-  const CAPACITY_IMPACT_FACTOR = 0.00001; // Adjust this to tune the effect
-  const growthReduction = removalCapacity * CAPACITY_IMPACT_FACTOR;
+  // Calculate the total daily inflow for this year without cleanup
+  const baseProduction = 2; // Million metric tons in 1950
+  const wasteRate = 0.02 + (year - 1950) * 0.0001;
+  const totalProduction = baseProduction * Math.exp(baseGrowthRate * (year - 1950));
+  const dailyInflow = (totalProduction * wasteRate * 1000000) / 365;
   
-  // Growth rate can't go negative
-  return Math.max(0, baseGrowthRate - growthReduction);
+  // Calculate what percentage of the daily inflow we can handle
+  const percentageHandled = Math.min(1, removalCapacity / dailyInflow);
+  
+  // Reduce the growth rate proportionally to the percentage we can handle
+  // This means if we can handle 6% of inflows, future growth will be reduced by 6%
+  return Math.max(0, baseGrowthRate * (1 - percentageHandled));
 };
 
 export const calculateWastePerDay = (year: number, removalCapacity: number = 0): number => {
