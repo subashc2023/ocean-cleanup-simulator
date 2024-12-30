@@ -16,10 +16,9 @@ export const ConclusionsPanel = () => (
         <div>
           <h4 className="text-white font-medium mb-2">Cost-Effective Prevention and Cures:</h4>
           <ul className="list-disc pl-5 space-y-1">
-            <li>Concentrated efforts are insanely effective</li>
-            <li>$250M/year could handle Philippines' river output</li>
-            <li>$500M/year could handle Philippines + India</li>
-            <li>$1B/year could handle all major Asian river systems</li>
+            <li>Concentrated efforts are insanely effective, but unrealistic</li>
+            <li>A single river system in the Philippines, the Pahang Basin,  accounts for 6% of global inflows</li>
+            <li>Distributed efforts are more realistic, but less effective</li>
             <li>At current costs, it will take $70B a year to handle almost every single source of plastic to the oceans</li>
             <li>At current costs, it will take $50B One Time to clean every single major garbage patch</li>
             <li>At current costs, it will take $1.5-3 Trillion to clean every single piece of plastic in the ocean</li>
