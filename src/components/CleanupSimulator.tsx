@@ -78,15 +78,19 @@ const CleanupSimulator = () => {
     
     // Add data points for each year
     for (let year = startYear; year <= endYear; year++) {
-      const wastePerDay = calculateWastePerDay(year, 0);
+      // Calculate original waste without cleanup effects
+      const originalWastePerDay = calculateWastePerDay(year, 0);
+      
+      // Calculate waste with cleanup effects included
+      const wasteWithCleanup = calculateWastePerDay(year, removalCapacity);
       
       // Calculate Team Seas effect on inflow
       const teamSeasEffect = (year >= TEAM_SEAS_START && year <= TEAM_SEAS_END) 
         ? TEAM_SEAS_DAILY_RATE 
         : 0;
 
-      // Apply Team Seas reduction to the inflow before calculating removal
-      const adjustedWastePerDay = wastePerDay - teamSeasEffect;
+      // Apply Team Seas reduction to the inflow
+      const adjustedWastePerDay = wasteWithCleanup - teamSeasEffect;
       
       // Calculate cleanup removal
       const simulatedRemoval = year >= CLEANUP_START_YEAR ? removalCapacity : 0;
@@ -94,7 +98,7 @@ const CleanupSimulator = () => {
       
       // Calculate yearly accumulation using trapezoidal integration
       const yearlyAmount = ((netDailyChange + previousNetChange) / 2) * 365;
-      const yearlyAmountNoCleanup = ((wastePerDay + previousYearWaste) / 2) * 365;
+      const yearlyAmountNoCleanup = ((originalWastePerDay + previousYearWaste) / 2) * 365;
       
       // Update cumulative totals
       if (year > startYear) {
@@ -104,7 +108,7 @@ const CleanupSimulator = () => {
       
       results.push({
         year,
-        dailyInflow: Math.round(wastePerDay),
+        dailyInflow: Math.round(originalWastePerDay),
         netInflow: Math.round(netDailyChange),
         cumulativeMillionTons: Math.max(0, Math.round(cumulativeTotal / 1000000 * 10) / 10),
         cumulativeNoCleanupMillionTons: Math.round(cumulativeTotalNoCleanup / 1000000 * 10) / 10

@@ -1,4 +1,23 @@
 import { ChartConfig } from './types';
+import { DataPoint } from '@/lib/calculations';
+
+// Calculate rate of change from previous point to current point
+const calculateSlope = (data: DataPoint[], index: number, key: keyof DataPoint): number => {
+  if (index <= 0) return 0;
+  
+  const currentValue = data[index][key] as number;
+  const prevValue = data[index - 1][key] as number;
+  const currentYear = data[index].year;
+  const prevYear = data[index - 1].year;
+  
+  // Rate of change from previous to current point
+  return currentValue - prevValue;
+};
+
+// Format slope with correct sign
+const formatSlope = (slope: number): string => {
+  return slope >= 0 ? `+${slope.toFixed(1)}` : slope.toFixed(1);
+};
 
 export const chartConfig: ChartConfig = {
   lines: [
@@ -38,9 +57,21 @@ export const chartConfig: ChartConfig = {
     }
   ],
   tooltipFormatters: {
-    'Original Total': (value: number) => `${value.toLocaleString()} million tons`,
-    'New Total': (value: number) => `${value.toLocaleString()} million tons`,
-    'Original Inflow': (value: number) => `${value.toLocaleString()} tons/day`,
-    'Net Inflow with Cleanup': (value: number) => `${value.toLocaleString()} tons/day`
+    'Original Total': (value: number, payload: any, index: number, data: DataPoint[]) => {
+      const slope = calculateSlope(data, index, 'cumulativeNoCleanupMillionTons');
+      return `${value.toLocaleString()} million tons [${formatSlope(slope)}]`;
+    },
+    'New Total': (value: number, payload: any, index: number, data: DataPoint[]) => {
+      const slope = calculateSlope(data, index, 'cumulativeMillionTons');
+      return `${value.toLocaleString()} million tons [${formatSlope(slope)}]`;
+    },
+    'Original Inflow': (value: number, payload: any, index: number, data: DataPoint[]) => {
+      const slope = calculateSlope(data, index, 'dailyInflow');
+      return `${value.toLocaleString()} tons/day [${formatSlope(slope)}]`;
+    },
+    'Net Inflow with Cleanup': (value: number, payload: any, index: number, data: DataPoint[]) => {
+      const slope = calculateSlope(data, index, 'netInflow');
+      return `${value.toFixed(0).toLocaleString()} tons/day [${formatSlope(slope)}]`;
+    }
   }
 }; 

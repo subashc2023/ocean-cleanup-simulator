@@ -1,18 +1,18 @@
 import { DataPoint } from '@/lib/calculations';
 
-export interface ChartLine {
-  id: string;
-  dataKey: keyof DataPoint;
-  name: string;
-  stroke: string;
-  yAxisId: 'left' | 'right';
-  strokeWidth: number;
-  strokeDasharray?: string;
-}
-
 export interface ChartConfig {
-  lines: ChartLine[];
-  tooltipFormatters: Record<string, (value: number) => string>;
+  lines: Array<{
+    id: string;
+    dataKey: string;
+    name: string;
+    stroke: string;
+    yAxisId: string;
+    strokeWidth: number;
+    strokeDasharray?: string;
+  }>;
+  tooltipFormatters: {
+    [key: string]: (value: number, payload: any, index: number, data: DataPoint[]) => string;
+  };
 }
 
 export interface SimulatorChartProps {
